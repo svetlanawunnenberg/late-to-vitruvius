@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="A racing game about the vocabulary of classical architecture. Burst the fruit, read the scrolls, reach the lecture before Vitruvius begins.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#e4e2d6">
+<title>Late to Vitruvius</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* ============================================================
+   LATE TO VITRUVIUS
+   The look: an engraved architectural plate that moves.
+   Ink on laid paper, dimension annotations in mono, a carmine
+   pomegranate as the only hot colour on the sheet.
+   ============================================================ */
+
+:root{
+  /* --- paper & ink: neutrals biased green-grey, like an aged plate --- */
+  --paper:      #e4e2d6;
+  --paper-lit:  #efeee4;
+  --paper-deep: #d5d2c3;
+  --ink:        #1c1a17;
+  --ink-soft:   #4a463d;
+  --ink-faint:  #6d675b;
+  --rule:       rgba(28,26,23,.30);
+  --rule-hair:  rgba(28,26,23,.14);
+
+  /* --- the only hot colour on the sheet --- */
+  --pom:        #a81f37;
+  --pom-deep:   #7b1428;
+  --fig:        #4a3357;
+  --brass:      #8a7223;
+  --verdigris:  #4f6b5d;
+
+  --sky-hi:     #dcdccd;
+  --sky-lo:     #cfd0c0;
+  --ground:     #cbc6b4;
+
+  --focus:      #a81f37;
+
+  --f-display: "Cormorant Garamond", "Palatino Linotype", Palatino, Georgia, serif;
+  --f-body:    "EB Garamond", "Palatino Linotype", Palatino, Georgia, serif;
+  --f-mono:    "IBM Plex Mono", "Consolas", "SF Mono", ui-monospace, monospace;
+
+  --plate-max: 1080px;
+}
+
+/* dark = the plate as a lantern slide / photographic negative, not an inversion */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:      #16171a;
+    --paper-lit:  #1f2126;
+    --paper-deep: #101114;
+    --ink:        #e6e3d7;
+    --ink-soft:   #b4afa0;
+    --ink-faint:  #8d887a;
+    --rule:       rgba(230,227,215,.30);
+    --rule-hair:  rgba(230,227,215,.13);
+    --pom:        #e05266;
+    --pom-deep:   #b8384c;
+    --fig:        #a688bd;
+    --brass:      #cfae4e;
+    --verdigris:  #7fae99;
+    --sky-hi:     #23262c;
+    --sky-lo:     #1a1d21;
+    --ground:     #202227;
+    --focus:      #e05266;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:      #16171a;
+  --paper-lit:  #1f2126;
+  --paper-deep: #101114;
+  --ink:        #e6e3d7;
+  --ink-soft:   #b4afa0;
+  --ink-faint:  #8d887a;
+  --rule:       rgba(230,227,215,.30);
+  --rule-hair:  rgba(230,227,215,.13);
+  --pom:        #e05266;
+  --pom-deep:   #b8384c;
+  --fig:        #a688bd;
+  --brass:      #cfae4e;
+  --verdigris:  #7fae99;
+  --sky-hi:     #23262c;
+  --sky-lo:     #1a1d21;
+  --ground:     #202227;
+  --focus:      #e05266;
+}
+
+*{ box-sizing:border-box; }
+html,body{ height:100%; }
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:17px;
+  line-height:1.55;
+  -webkit-text-size-adjust:100%;
+  -webkit-tap-highlight-color:transparent;
+  overflow-x:hidden;
+}
+img{ max-width:100%; }
+[hidden]{ display:none !important; }
+
+:focus-visible{
+  outline:2px solid var(--focus);
+  outline-offset:3px;
+}
+
+/* ---------- the plate: a double-ruled engraving border ---------- */
+.plate{
+  max-width:var(--plate-max);
+  margin:0 auto;
+  min-height:100svh;
+  padding:clamp(10px,2.4vw,26px);
+  display:flex;
+  flex-direction:column;
+}
+.plate-inner{
+  flex:1;
+  border:1px solid var(--rule);
+  outline:3px solid var(--rule-hair);
+  outline-offset:4px;
+  background:var(--paper-lit);
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  overflow:hidden;
+}
+
+/* plate caption bar, top of every screen */
+.plate-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:12px;
+  padding:9px clamp(12px,2.2vw,22px);
+  border-bottom:1px solid var(--rule-hair);
+  font-family:var(--f-mono);
+  font-size:10.5px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  flex-wrap:wrap;
+}
+.plate-head b{ font-weight:600; color:var(--ink-soft); }
+
+/* ---------- typography ---------- */
+.eyebrow{
+  font-family:var(--f-mono);
+  font-size:11px;
+  letter-spacing:.3em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  margin:0;
+}
+h1.title{
+  font-family:var(--f-display);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  line-height:.94;
+  text-wrap:balance;
+  margin:.18em 0 0;
+  font-size:clamp(2.6rem,10.5vw,6.1rem);
+}
+h1.title .lo{
+  display:block;
+  font-size:.44em;
+  letter-spacing:.34em;
+  font-weight:400;
+  color:var(--ink-soft);
+  margin-top:.5em;
+}
+h2.screen-h{
+  font-family:var(--f-display);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.13em;
+  font-size:clamp(1.35rem,4.2vw,2.05rem);
+  margin:0;
+  text-wrap:balance;
+}
+.lede{
+  max-width:56ch;
+  color:var(--ink-soft);
+  font-size:1.03rem;
+  margin:0;
+}
+.lede em{ color:var(--ink); font-style:italic; }
+
+/* ---------- buttons ---------- */
+.btn{
+  font-family:var(--f-mono);
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  padding:13px 26px;
+  border:1px solid var(--ink);
+  background:transparent;
+  color:var(--ink);
+  cursor:pointer;
+  transition:background .16s ease, color .16s ease;
+}
+.btn:hover{ background:var(--ink); color:var(--paper-lit); }
+.btn-primary{
+  background:var(--pom);
+  border-color:var(--pom);
+  color:#fbf7f2;
+}
+.btn-primary:hover{ background:var(--pom-deep); border-color:var(--pom-deep); color:#fbf7f2; }
+.btn-quiet{
+  border-color:var(--rule);
+  color:var(--ink-faint);
+  padding:10px 16px;
+  letter-spacing:.14em;
+}
+.btn-quiet:hover{ background:transparent; color:var(--ink); border-color:var(--ink-soft); }
+.btn-row{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
+
+/* ---------- screen scaffolding ---------- */
+.screen{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  padding:clamp(18px,4vw,44px);
+  gap:clamp(16px,3vw,26px);
+  overflow-y:auto;
+}
+.screen.center{ justify-content:center; }
+
+/* ---------- title screen ---------- */
+.title-wrap{ display:flex; flex-direction:column; gap:clamp(18px,3.4vw,30px); }
+.title-art{
+  position:relative;
+  height:clamp(120px,22vw,200px);
+  margin-top:-6px;
+}
+.title-art svg{ position:absolute; inset:0; width:100%; height:100%; }
+.rule-scale{
+  height:20px;
+  border-top:1px solid var(--rule);
+  position:relative;
+  display:flex;
+  align-items:flex-start;
+}
+.rule-scale span{
+  flex:1;
+  border-left:1px solid var(--rule-hair);
+  height:6px;
+}
+.rule-scale span:nth-child(5n+1){ height:12px; border-left-color:var(--rule); }
+
+/* ---------- chariot choice ---------- */
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:14px;
+}
+.chariot-card{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding:16px;
+  border:1px solid var(--rule-hair);
+  background:transparent;
+  color:inherit;
+  font:inherit;
+  text-align:left;
+  cursor:pointer;
+  transition:border-color .16s ease, background .16s ease;
+}
+.chariot-card:hover{ border-color:var(--ink-soft); }
+.chariot-card[aria-pressed="true"]{
+  border-color:var(--pom);
+  background:color-mix(in srgb, var(--pom) 7%, transparent);
+}
+.chariot-card .art{ position:relative; height:88px; }
+.chariot-card .art svg{ position:absolute; inset:0; width:100%; height:100%; color:var(--ink-soft); }
+.chariot-card .art img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
+.chariot-name{
+  font-family:var(--f-display);
+  font-size:1.4rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  line-height:1;
+}
+.chariot-gloss{
+  font-family:var(--f-mono);
+  font-size:10px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.chariot-card p{ margin:0; font-size:.95rem; color:var(--ink-soft); }
+.spec{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:2px 10px;
+  font-family:var(--f-mono);
+  font-size:10.5px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  border-top:1px solid var(--rule-hair);
+  padding-top:8px;
+}
+.spec b{ font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums; }
+
+/* answer-mode toggle */
+.seg{ display:inline-flex; border:1px solid var(--rule); }
+.seg button{
+  font-family:var(--f-mono);
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  padding:9px 16px;
+  border:0;
+  background:transparent;
+  color:var(--ink-faint);
+  cursor:pointer;
+}
+.seg button + button{ border-left:1px solid var(--rule); }
+.seg button[aria-pressed="true"]{ background:var(--ink); color:var(--paper-lit); }
+
+/* ---------- tutorial ---------- */
+.tut{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+  max-width:60ch;
+  margin:0 auto;
+  width:100%;
+}
+.tut-fig{
+  height:clamp(150px,28vw,220px);
+  border:1px solid var(--rule-hair);
+  display:grid;
+  place-items:center;
+  position:relative;
+  overflow:hidden;
+  background:linear-gradient(var(--sky-hi),var(--sky-lo));
+}
+.tut-dots{ display:flex; gap:7px; }
+.tut-dots i{
+  width:7px; height:7px; border:1px solid var(--ink-soft);
+  border-radius:50%; display:block;
+}
+.tut-dots i.on{ background:var(--pom); border-color:var(--pom); }
+
+/* ---------- the game ---------- */
+#screen-game{ padding:0; gap:0; overflow:hidden; }
+.hud{
+  display:flex;
+  align-items:center;
+  gap:clamp(10px,2.4vw,22px);
+  padding:9px clamp(11px,2.2vw,20px);
+  border-bottom:1px solid var(--rule-hair);
+  font-family:var(--f-mono);
+  font-size:11px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  flex-wrap:wrap;
+}
+.hud .stat{ display:flex; align-items:baseline; gap:6px; }
+.hud .stat b{
+  font-weight:600; color:var(--ink);
+  font-size:15px; font-variant-numeric:tabular-nums;
+  letter-spacing:.02em;
+}
+.hud .grow{ flex:1; }
+#streak-flag{ color:var(--pom); font-weight:600; }
+
+/* the road */
+.road{
+  position:relative;
+  flex:1;
+  min-height:230px;
+  overflow:hidden;
+  background:linear-gradient(var(--sky-hi) 0%, var(--sky-hi) 58%, var(--ground) 58%, var(--ground) 100%);
+  cursor:crosshair;
+  touch-action:manipulation;
+  user-select:none;
+  -webkit-user-select:none;
+}
+/* horizon scenery — drawn, replaced by assets/road.png if present */
+.scenery{
+  position:absolute;
+  left:0; bottom:32%;
+  width:200%;
+  height:46%;
+  color:var(--ink-faint);
+  opacity:.34;
+  animation:pan 26s linear infinite;
+}
+.scenery svg, .scenery img{ width:50%; height:100%; display:block; float:left; }
+.scenery img{ object-fit:fill; }
+@keyframes pan{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
+
+/* paving */
+.paving{
+  position:absolute;
+  left:0; bottom:0;
+  width:200%;
+  height:32%;
+  background-image:repeating-linear-gradient(
+    90deg,
+    transparent 0 46px,
+    var(--rule-hair) 46px 47px
+  ),
+  repeating-linear-gradient(
+    0deg,
+    transparent 0 22px,
+    var(--rule-hair) 22px 23px
+  );
+  animation:pan 3.1s linear infinite;
+}
+
+.chariot{
+  position:absolute;
+  left:7%;
+  bottom:6%;
+  width:clamp(120px,21vw,210px);
+  height:clamp(84px,15vw,150px);
+  color:var(--ink);
+  animation:bob 1.05s ease-in-out infinite;
+  pointer-events:none;
+  z-index:3;
+}
+.chariot svg, .chariot img{ position:absolute; inset:0; width:100%; height:100%; }
+.chariot img{ object-fit:contain; object-position:bottom left; }
+@keyframes bob{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-4px);} }
+
+/* fruit */
+.fruit{
+  position:absolute;
+  width:56px; height:56px;
+  cursor:pointer;
+  z-index:4;
+  will-change:transform;
+  touch-action:manipulation;
+}
+.fruit svg, .fruit img{ width:100%; height:100%; display:block; pointer-events:none; }
+.fruit img{ object-fit:contain; }
+.fruit.scrollfig{ width:78px; height:78px; }
+.fruit.scrollfig::after{
+  content:"";
+  position:absolute; inset:-11px;
+  border:1px solid var(--brass);
+  border-radius:50%;
+  opacity:.5;
+  animation:pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse{ 0%,100%{ transform:scale(1); opacity:.5;} 50%{ transform:scale(1.13); opacity:.16;} }
+
+.burst{
+  position:absolute;
+  z-index:5;
+  pointer-events:none;
+  font-family:var(--f-mono);
+  font-size:13px;
+  font-weight:600;
+  letter-spacing:.06em;
+  animation:rise .72s ease-out forwards;
+}
+@keyframes rise{
+  from{ transform:translateY(0) scale(.8); opacity:1; }
+  to{ transform:translateY(-46px) scale(1.05); opacity:0; }
+}
+
+/* clepsydra — the water clock, right edge of the road */
+.clepsydra{
+  position:absolute;
+  right:clamp(10px,2.4vw,20px);
+  top:12px;
+  bottom:12px;
+  width:26px;
+  z-index:6;
+  border:1px solid var(--rule);
+  background:color-mix(in srgb, var(--paper-lit) 70%, transparent);
+  display:flex;
+  align-items:flex-end;
+  overflow:hidden;
+}
+.clepsydra-fill{
+  width:100%;
+  background:var(--verdigris);
+  opacity:.55;
+  transition:height .28s linear;
+}
+.clepsydra.low .clepsydra-fill{ background:var(--pom); opacity:.7; }
+.clepsydra-mark{
+  position:absolute; left:0; right:0;
+  border-top:1px solid var(--rule-hair);
+}
+
+/* the scale bar — distance measured in modules, like a plate scale */
+.scalebar{
+  position:relative;
+  height:44px;
+  border-top:1px solid var(--rule-hair);
+  padding:0 clamp(11px,2.2vw,20px);
+  display:flex;
+  align-items:center;
+}
+.scale-track{
+  position:relative;
+  flex:1;
+  height:15px;
+  border-bottom:1px solid var(--rule);
+}
+.scale-tick{
+  position:absolute;
+  bottom:0;
+  width:1px;
+  height:7px;
+  background:var(--rule);
+}
+.scale-tick.done{ background:var(--pom); height:12px; width:2px; }
+.scale-tick.miss{ background:var(--ink-faint); height:12px; width:2px; }
+.scale-mark{
+  position:absolute;
+  bottom:-3px;
+  width:9px; height:9px;
+  background:var(--ink);
+  transform:translateX(-50%) rotate(45deg);
+  transition:left .45s cubic-bezier(.3,.9,.35,1);
+}
+.scale-label{
+  font-family:var(--f-mono);
+  font-size:10px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  padding-left:14px;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+}
+
+/* ---------- the scroll ---------- */
+.scroll-veil{
+  position:absolute;
+  inset:0;
+  z-index:20;
+  background:color-mix(in srgb, var(--paper) 78%, transparent);
+  display:grid;
+  place-items:center;
+  padding:clamp(12px,3vw,28px);
+}
+.scroll{
+  width:min(640px,100%);
+  max-height:100%;
+  overflow-y:auto;
+  background:var(--paper-lit);
+  border:1px solid var(--rule);
+  outline:3px solid var(--rule-hair);
+  outline-offset:3px;
+  padding:clamp(18px,3.4vw,30px);
+  display:flex;
+  flex-direction:column;
+  gap:15px;
+  transform-origin:top center;
+  animation:unroll .3s cubic-bezier(.22,.9,.3,1);
+  position:relative;
+}
+@keyframes unroll{
+  from{ transform:scaleY(.04); opacity:0; }
+  to{ transform:scaleY(1); opacity:1; }
+}
+.scroll-rod{
+  height:5px;
+  background:var(--ink-soft);
+  border-radius:3px;
+  opacity:.35;
+  margin:0 -6px;
+}
+.scroll-ask{
+  font-family:var(--f-mono);
+  font-size:10px;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.scroll-prompt{
+  font-family:var(--f-body);
+  font-size:clamp(1.1rem,2.9vw,1.42rem);
+  line-height:1.42;
+  margin:0;
+  text-wrap:pretty;
+}
+.scroll-prompt.term{
+  font-family:var(--f-display);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.11em;
+  font-size:clamp(1.5rem,5vw,2.3rem);
+  line-height:1.06;
+}
+.answer-form{ display:flex; gap:9px; flex-wrap:wrap; }
+.answer-form input{
+  flex:1;
+  min-width:170px;
+  font-family:var(--f-mono);
+  font-size:16px;
+  letter-spacing:.05em;
+  padding:12px 14px;
+  border:1px solid var(--ink-soft);
+  background:var(--paper);
+  color:var(--ink);
+}
+.answer-form input::placeholder{ color:var(--ink-faint); opacity:.75; }
+.choices{ display:flex; flex-direction:column; gap:9px; }
+.choice{
+  text-align:left;
+  font-family:var(--f-body);
+  font-size:1rem;
+  line-height:1.42;
+  padding:13px 15px;
+  border:1px solid var(--rule);
+  background:transparent;
+  color:var(--ink);
+  cursor:pointer;
+  transition:border-color .14s ease, background .14s ease;
+}
+.choice:hover{ border-color:var(--ink-soft); background:color-mix(in srgb,var(--ink) 4%,transparent); }
+.choice.right{ border-color:var(--verdigris); background:color-mix(in srgb,var(--verdigris) 16%,transparent); }
+.choice.wrong{ border-color:var(--pom); background:color-mix(in srgb,var(--pom) 12%,transparent); }
+
+.verdict{
+  border-top:1px solid var(--rule-hair);
+  padding-top:13px;
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+.verdict-head{
+  font-family:var(--f-mono);
+  font-size:11px;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  font-weight:600;
+}
+.verdict.good .verdict-head{ color:var(--verdigris); }
+.verdict.bad  .verdict-head{ color:var(--pom); }
+.verdict.near .verdict-head{ color:var(--brass); }
+.verdict p{ margin:0; color:var(--ink-soft); font-size:.98rem; }
+.verdict .term-was{
+  font-family:var(--f-display);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+  font-size:1.28rem;
+  color:var(--ink);
+}
+.cite{
+  font-family:var(--f-mono);
+  font-size:10px;
+  letter-spacing:.13em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+}
+
+/* ---------- interlude & arrival ---------- */
+.grade{ display:flex; flex-direction:column; gap:17px; max-width:46ch; }
+.grade-row{ display:flex; flex-direction:column; gap:5px; }
+.grade-top{
+  display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.grade-top b{
+  font-family:var(--f-display); font-size:1.16rem; font-weight:700;
+  letter-spacing:.14em; color:var(--ink);
+}
+.grade-top .num{ font-family:var(--f-mono); font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums; letter-spacing:.05em; }
+.grade-bar{ height:9px; border:1px solid var(--rule); position:relative; }
+.grade-bar i{ position:absolute; inset:0 auto 0 0; background:var(--ink); display:block; }
+.grade-row:nth-child(1) .grade-bar i{ background:var(--verdigris); }
+.grade-row:nth-child(2) .grade-bar i{ background:var(--brass); }
+.grade-row:nth-child(3) .grade-bar i{ background:var(--pom); }
+.grade-note{ font-size:.93rem; color:var(--ink-soft); margin:0; }
+
+.stamp{
+  display:inline-block;
+  font-family:var(--f-mono);
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  border:2px solid currentColor;
+  padding:7px 14px;
+  transform:rotate(-2.2deg);
+  align-self:flex-start;
+}
+.stamp.pass{ color:var(--verdigris); }
+.stamp.fail{ color:var(--pom); }
+
+.missed{ display:flex; flex-direction:column; gap:7px; }
+.missed-item{
+  display:grid;
+  grid-template-columns:minmax(120px,auto) 1fr;
+  gap:4px 16px;
+  padding:9px 0;
+  border-top:1px solid var(--rule-hair);
+  align-items:baseline;
+}
+.missed-item dt{
+  font-family:var(--f-display); font-weight:700; text-transform:uppercase;
+  letter-spacing:.09em; font-size:1.02rem;
+}
+.missed-item dd{ margin:0; color:var(--ink-soft); font-size:.96rem; }
+
+/* ---------- scriptorium ---------- */
+.scriptorium{ display:flex; flex-direction:column; gap:0; }
+.script-group + .script-group{ margin-top:26px; }
+.script-head{
+  display:flex; align-items:baseline; gap:12px;
+  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--ink-faint);
+  border-bottom:1px solid var(--rule); padding-bottom:7px; margin-bottom:4px;
+}
+.script-head b{ font-family:var(--f-display); font-size:1.2rem; letter-spacing:.13em; color:var(--ink); font-weight:700; }
+.entry{
+  display:grid;
+  grid-template-columns:minmax(150px,190px) 1fr;
+  gap:3px 20px;
+  padding:11px 0;
+  border-bottom:1px solid var(--rule-hair);
+  align-items:baseline;
+}
+.entry dt{
+  font-family:var(--f-display); font-weight:700; text-transform:uppercase;
+  letter-spacing:.09em; font-size:1.05rem;
+}
+.entry dd{ margin:0; color:var(--ink-soft); font-size:.97rem; }
+.entry .src{
+  grid-column:2; font-family:var(--f-mono); font-size:9.5px;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); margin-top:3px;
+}
+.entry .src.vitr{ color:var(--brass); }
+
+/* ---------- how to play ---------- */
+.how-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:0 26px;
+}
+.how-col h3{
+  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--ink-faint);
+  border-bottom:1px solid var(--rule); padding-bottom:7px;
+  margin:22px 0 10px; font-weight:600;
+}
+.how-col ol, .how-col ul{ margin:0; padding-left:1.15em; color:var(--ink-soft); font-size:.97rem; }
+.how-col li{ margin-bottom:7px; }
+kbd{
+  font-family:var(--f-mono); font-size:11px; font-weight:600;
+  border:1px solid var(--rule); padding:1px 6px; color:var(--ink);
+  letter-spacing:.04em;
+}
+
+/* ---------- foot ---------- */
+.plate-foot{
+  border-top:1px solid var(--rule-hair);
+  padding:9px clamp(12px,2.2vw,22px);
+  display:flex; justify-content:space-between; align-items:center; gap:12px;
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.15em;
+  text-transform:uppercase; color:var(--ink-faint);
+  flex-wrap:wrap;
+}
+.plate-foot a{ color:var(--ink-soft); text-decoration:none; border-bottom:1px solid var(--rule-hair); }
+.plate-foot a:hover{ color:var(--ink); border-bottom-color:var(--ink-soft); }
+.linky{
+  background:none; border:0; padding:0; cursor:pointer;
+  font:inherit; letter-spacing:inherit; text-transform:inherit;
+  color:var(--ink-soft); border-bottom:1px solid var(--rule-hair);
+}
+.linky:hover{ color:var(--ink); border-bottom-color:var(--ink-soft); }
+
+@media (max-width:560px){
+  .entry{ grid-template-columns:1fr; gap:2px; }
+  .entry .src{ grid-column:1; }
+  .missed-item{ grid-template-columns:1fr; }
+  .clepsydra{ width:18px; }
+}
+
+@media (prefers-reduced-motion:reduce){
+  *, *::before, *::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+  }
+  .scenery, .paving{ animation:none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="plate">
+<div class="plate-inner">
+
+  <div class="plate-head">
+    <span id="plate-no">Plate — <b>Frontispiece</b></span>
+    <span>Late to Vitruvius</span>
+  </div>
+
+  <!-- ============ TITLE ============ -->
+  <section class="screen center" id="screen-title">
+    <div class="title-wrap">
+      <p class="eyebrow">Rome &middot; the lecture has begun</p>
+      <h1 class="title">Late to<br>Vitruvius<span class="lo">A race through the orders</span></h1>
+
+      <div class="title-art" aria-hidden="true">
+        <!-- A hexastyle front, drawn as a measured plate. The centre
+             intercolumniation is the wide one: this is the eustyle
+             arrangement Vitruvius credits to Hermogenes. -->
+        <svg viewBox="0 0 900 212" preserveAspectRatio="xMidYMax meet" fill="none"
+             stroke="currentColor" stroke-width="1.1" stroke-linejoin="round"
+             style="color:var(--ink-soft);opacity:.62">
+
+          <!-- entablature -->
+          <g>
+            <!-- cornice, with its corona thrown forward -->
+            <path d="M54 28 h792 v15 h-792z"/>
+            <path d="M60 36 h780" opacity=".55"/>
+            <!-- dentil band -->
+            <path d="M66 43 h768 v8 h-768z" opacity=".8"/>
+            <g opacity=".65">
+              <path d="M80 43v8 M96 43v8 M112 43v8 M128 43v8 M144 43v8 M160 43v8 M176 43v8 M192 43v8
+                       M208 43v8 M224 43v8 M240 43v8 M256 43v8 M272 43v8 M288 43v8 M304 43v8 M320 43v8
+                       M336 43v8 M352 43v8 M368 43v8 M384 43v8 M400 43v8 M416 43v8 M432 43v8 M448 43v8
+                       M464 43v8 M480 43v8 M496 43v8 M512 43v8 M528 43v8 M544 43v8 M560 43v8 M576 43v8
+                       M592 43v8 M608 43v8 M624 43v8 M640 43v8 M656 43v8 M672 43v8 M688 43v8 M704 43v8
+                       M720 43v8 M736 43v8 M752 43v8 M768 43v8 M784 43v8 M800 43v8 M816 43v8"/>
+            </g>
+            <!-- frieze -->
+            <path d="M68 51 h764 v18 h-764z"/>
+            <!-- architrave, in two fasciae -->
+            <path d="M68 69 h764 v13 h-764z"/>
+            <path d="M74 76 h752" opacity=".5"/>
+          </g>
+
+          <!-- six columns: base, shaft with entasis, capital -->
+          <g id="colonnade">
+            <g transform="translate(110,0)" id="col">
+              <path d="M-17 82 h34 v8 h-34z"/>
+              <path d="M-17 90 q4 5 6 8 h22 q2-3 6-8"/>
+              <path d="M-11 98 C-12.6 122 -12.6 152 -9.6 178 M11 98 C12.6 122 12.6 152 9.6 178"/>
+              <path d="M-5 102 C-6 126 -6 152 -4 174 M5 102 C6 126 6 152 4 174" opacity=".42"/>
+              <path d="M-13 178 h26 v9 h-26z"/>
+              <path d="M-16 187 h32 v7 h-32z"/>
+            </g>
+            <use href="#col" x="130"/>
+            <use href="#col" x="260"/>
+            <use href="#col" x="420"/>
+            <use href="#col" x="550"/>
+            <use href="#col" x="680"/>
+          </g>
+
+          <!-- stylobate and the steps below it -->
+          <g>
+            <path d="M46 194 h808"/>
+            <path d="M38 200 h824"/>
+            <path d="M28 206 h844"/>
+          </g>
+
+          <!-- the dimension, written in the empty centre bay -->
+          <g opacity=".95">
+            <path d="M383 128 v14 M517 128 v14"/>
+            <path d="M383 135 h134" stroke-dasharray="4 3"/>
+          </g>
+          <g stroke="none" fill="currentColor">
+            <text x="450" y="124" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+                  font-size="11" letter-spacing="1.4">2¼ D</text>
+            <text x="450" y="156" text-anchor="middle" font-family="IBM Plex Mono, monospace"
+                  font-size="8.5" letter-spacing="2.6" opacity=".72">EUSTYLE</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="rule-scale" aria-hidden="true">
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
+
+      <p class="lede">Vitruvius is teaching this morning and you are on the wrong side of the city. Take a chariot, burst the fruit for time, and read every scroll the road throws at you &mdash; because <em>he will not seat a student who has not studied.</em></p>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="go-start">Harness the horses</button>
+        <button class="btn btn-quiet" id="go-script">The Scriptorium</button>
+        <button class="btn btn-quiet" id="go-how">How to play</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CHARIOT ============ -->
+  <section class="screen" id="screen-chariot" hidden>
+    <div>
+      <p class="eyebrow">Choose your conveyance</p>
+      <h2 class="screen-h">Three chariots stand in the yard</h2>
+    </div>
+    <p class="lede">They are not the same race. The <em>biga</em> forgives nothing and rewards speed; the <em>carpentum</em> is slow but turns knowledge into distance. Pick the one that suits how much you already know.</p>
+
+    <div class="card-grid" id="chariot-grid"></div>
+
+    <div>
+      <p class="eyebrow" style="margin-bottom:9px">How you answer the scrolls</p>
+      <div class="seg" role="group" aria-label="Answer mode">
+        <button id="mode-type" aria-pressed="false">Type the term</button>
+        <button id="mode-tap" aria-pressed="false">Tap the meaning</button>
+      </div>
+      <p class="lede" style="margin-top:9px;font-size:.94rem" id="mode-note"></p>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" id="go-tut">Set out</button>
+      <button class="btn btn-quiet" id="back-title">Back</button>
+    </div>
+  </section>
+
+  <!-- ============ TUTORIAL ============ -->
+  <section class="screen center" id="screen-tut" hidden>
+    <div class="tut">
+      <div class="tut-fig" id="tut-fig"></div>
+      <div>
+        <p class="eyebrow" id="tut-step">Step 1 of 4</p>
+        <h2 class="screen-h" id="tut-h">&nbsp;</h2>
+      </div>
+      <p class="lede" id="tut-p">&nbsp;</p>
+      <div class="btn-row" style="justify-content:space-between">
+        <div class="tut-dots" id="tut-dots" aria-hidden="true"></div>
+        <div class="btn-row">
+          <button class="btn btn-quiet" id="tut-skip">Skip</button>
+          <button class="btn btn-primary" id="tut-next">Next</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GAME ============ -->
+  <section class="screen" id="screen-game" hidden>
+    <div class="hud">
+      <span class="stat">Score <b id="hud-score">0</b></span>
+      <span class="stat">Scrolls <b id="hud-q">0/8</b></span>
+      <span class="stat" id="streak-flag" hidden>Streak &times;<b id="hud-streak">1</b></span>
+      <span class="grow"></span>
+      <span class="stat">Clepsydra <b id="hud-time">0</b>s</span>
+      <button class="btn btn-quiet" id="btn-quit" style="padding:6px 12px">Give up</button>
+    </div>
+
+    <div class="road" id="road">
+      <div class="scenery" id="scenery" aria-hidden="true"></div>
+      <div class="paving" aria-hidden="true"></div>
+      <div class="chariot" id="chariot-art" aria-hidden="true"></div>
+      <div class="clepsydra" id="clepsydra" aria-hidden="true">
+        <div class="clepsydra-fill" id="clepsydra-fill" style="height:100%"></div>
+      </div>
+    </div>
+
+    <div class="scalebar">
+      <div class="scale-track" id="scale-track">
+        <div class="scale-mark" id="scale-mark" style="left:0%"></div>
+      </div>
+      <span class="scale-label" id="scale-label">0 / 8 modules</span>
+    </div>
+  </section>
+
+  <!-- ============ INTERLUDE / ARRIVAL ============ -->
+  <section class="screen" id="screen-result" hidden>
+    <div id="result-body"></div>
+  </section>
+
+  <!-- ============ SCRIPTORIUM ============ -->
+  <section class="screen" id="screen-script" hidden>
+    <div>
+      <p class="eyebrow">Every term in the game</p>
+      <h2 class="screen-h">The Scriptorium</h2>
+    </div>
+    <p class="lede">Definitions are kept short on purpose &mdash; this is a drill, not a dictionary. Terms marked <span style="color:var(--brass);font-family:var(--f-mono);font-size:10px;letter-spacing:.13em">VITRUVIUS</span> appear in <em>De architectura</em> itself; the rest are later codification, chiefly Renaissance.</p>
+    <div class="scriptorium" id="script-body"></div>
+    <div class="btn-row"><button class="btn btn-quiet" id="script-back">Back</button></div>
+  </section>
+
+  <!-- ============ HOW TO PLAY ============ -->
+  <section class="screen" id="screen-how" hidden>
+    <div>
+      <p class="eyebrow">On any machine you own</p>
+      <h2 class="screen-h">How to play</h2>
+    </div>
+    <p class="lede">It is a web page. There is nothing to install, nothing to sign into, and it works offline once loaded.</p>
+
+    <div class="how-grid">
+      <div class="how-col">
+        <h3>The game itself</h3>
+        <ol>
+          <li>Pick a chariot. Each is a different race, not a different colour.</li>
+          <li>Fruit crosses the road. <b>Click or tap</b> a pomegranate or fig to burst it &mdash; that buys you time on the water clock.</li>
+          <li>A glowing fig carries a scroll. Burst it and the scroll unrolls with a term.</li>
+          <li>Answer it. Correct answers move you along the road; the road is measured in <b>modules</b>, eight to a leg.</li>
+          <li>Three legs to the lecture. Arrive before the clock empties, and arrive having learned something.</li>
+        </ol>
+        <h3>Typing answers</h3>
+        <ul>
+          <li>Spelling is forgiving. Case, apostrophes, hyphens and accents are all ignored &mdash; <kbd>egg and dart</kbd> and <kbd>Egg-and-Dart</kbd> both pass.</li>
+          <li>One or two letters out and it says so, and gives the letter back to you to try again.</li>
+          <li><kbd>Enter</kbd> submits.</li>
+        </ul>
+      </div>
+      <div class="how-col">
+        <h3>Mac &middot; Safari or Chrome</h3>
+        <ul>
+          <li>Open the link. Click the fruit with the trackpad or mouse.</li>
+          <li>To keep it: <kbd>Cmd</kbd> <kbd>D</kbd> to bookmark.</li>
+        </ul>
+        <h3>Windows &middot; Edge or Chrome</h3>
+        <ul>
+          <li>Open the link. Click the fruit.</li>
+          <li>To keep it: <kbd>Ctrl</kbd> <kbd>D</kbd> to bookmark.</li>
+        </ul>
+        <h3>iPhone &amp; iPad</h3>
+        <ul>
+          <li>Open the link in Safari, then tap the fruit.</li>
+          <li>To make it behave like an app: tap the <b>Share</b> button, then <b>Add to Home Screen</b>. It opens full screen with no browser bars.</li>
+          <li>On a phone, <b>Tap the meaning</b> is the better answer mode &mdash; typing Latin against a clock on a small keyboard is no fun.</li>
+          <li>An iPad with a keyboard is the best of both: use <b>Type the term</b>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="btn-row"><button class="btn btn-quiet" id="how-back">Back</button></div>
+  </section>
+
+  <div class="plate-foot">
+    <span id="foot-left">Terms after Vitruvius, Vignola and the standard glossaries</span>
+    <span><button class="linky" id="foot-script">Scriptorium</button> &middot; <button class="linky" id="foot-how">How to play</button></span>
+  </div>
+
+</div>
+</div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   1. THE TERM BANK
+   src: "V" = appears in Vitruvius, De architectura.
+        "L" = later codification (Serlio, Vignola, Palladio,
+              Scamozzi, Chambers) or standard usage.
+   Definitions are deliberately one sentence.
+   ============================================================ */
+
+const TERMS = {
+  forum: [
+    ["column","An upright structural member, generally round, made up of base, shaft and capital.","V"],
+    ["shaft","The long tapering body of a column, between its base and its capital.","V"],
+    ["capital","The crowning member at the head of a column, on which the entablature rests.","V"],
+    ["base","The moulded foot on which the shaft of a column stands.","V"],
+    ["entablature","The whole horizontal assembly carried by the columns: architrave, frieze and cornice together.","L"],
+    ["pediment","The low triangular gable that crowns a portico, a door or a window.","V"],
+    ["cornice","The projecting crowning member at the top of an entablature or a wall.","V"],
+    ["portico","A roofed porch carried on columns, forming the entrance front of a building.","V"],
+    ["colonnade","A row of columns carrying an entablature.","V"],
+    ["arch","A curved structure spanning an opening, which carries its load in compression.","L"],
+    ["keystone","The central wedge-shaped stone at the crown of an arch.","L"],
+    ["pilaster","A shallow rectangular column engaged with a wall, treated as though it were free-standing.","L"],
+    ["plinth","The plain square block at the foot of a column, pedestal or wall.","V"],
+    ["balustrade","A rail carried on a row of small moulded posts.","L"],
+    ["loggia","A gallery open on at least one side, usually arcaded or colonnaded.","L"],
+    ["rotunda","A circular building or room, generally domed.","L"],
+    ["cupola","A small dome crowning a roof, a turret or a larger dome.","L"],
+    ["quoin","One of the dressed stones forming the external corner of a wall.","L"],
+    ["niche","A recess in a wall, commonly arched, made to hold a statue or an urn.","L"],
+    ["attic","A low storey set above the main entablature of a building.","L"],
+    ["facade","The principal face of a building.","L"],
+    ["vault","A ceiling or roof built as a continuous arch in masonry.","V"]
+  ],
+  via: [
+    ["architrave","The lowest member of an entablature: the beam spanning from column to column.","V"],
+    ["frieze","The middle division of an entablature, between architrave and cornice, plain or sculptured.","V"],
+    ["triglyph","The block of three vertical channels that punctuates a Doric frieze.","V"],
+    ["metope","The square panel set between two triglyphs in a Doric frieze.","V"],
+    ["guttae","The small conical drops hung beneath the triglyph and the mutule of the Doric order.","V"],
+    ["mutule","The flat inclined block on the soffit of the Doric cornice, set over each triglyph.","V"],
+    ["echinus","The convex cushion moulding beneath the abacus of a Doric or Ionic capital.","V"],
+    ["abacus","The flat slab forming the topmost member of a capital.","V"],
+    ["volute","The spiral scroll of the Ionic capital.","V"],
+    ["entasis","The slight convex swelling given to a column shaft, to correct the eye.","V"],
+    ["dentil","One of a band of small rectangular blocks, set like teeth, in a cornice.","V"],
+    ["modillion","A small scrolled bracket supporting the corona of a Corinthian or Composite cornice.","L"],
+    ["cyma recta","A double curve, concave above and convex below, generally used as a crowning moulding.","L"],
+    ["cyma reversa","A double curve, convex above and concave below; the ogee.","L"],
+    ["ovolo","A convex moulding, a quarter of a circle in section.","L"],
+    ["cavetto","A concave moulding, a quarter of a circle in section.","L"],
+    ["scotia","A deep concave moulding, chiefly used in a column base, which casts a strong shadow.","V"],
+    ["torus","A large convex moulding, semicircular in section, chiefly used in a column base.","V"],
+    ["astragal","A small convex moulding, semicircular in section; a bead.","V"],
+    ["fillet","A narrow flat band used to separate two mouldings.","L"],
+    ["corona","The broad flat projecting member of a cornice, above the bed mouldings, which throws the water clear of the wall.","V"],
+    ["soffit","The underside of any architectural member.","L"],
+    ["fluting","The shallow vertical channels cut in the shaft of a column.","V"],
+    ["acanthus","The deeply cut leaf carved on the Corinthian capital.","V"],
+    ["stylobate","The top step of the platform on which a colonnade stands.","V"],
+    ["tympanum","The triangular field enclosed by the mouldings of a pediment.","V"],
+    ["acroterion","An ornament set on the apex or the lower angles of a pediment.","V"],
+    ["egg and dart","An ovolo enriched with alternating oval and pointed forms.","L"],
+    ["dado","The plain body of a pedestal, between its base and its cap.","L"],
+    ["console","A bracket in the form of a vertical scroll, deeper than it is wide.","L"]
+  ],
+  basilica: [
+    ["pycnostyle","An intercolumniation of one and a half diameters &mdash; the closest of the five spacings.","V"],
+    ["systyle","An intercolumniation of two diameters.","V"],
+    ["eustyle","An intercolumniation of two and a quarter diameters, which Vitruvius holds to be the best.","V"],
+    ["diastyle","An intercolumniation of three diameters.","V"],
+    ["araeostyle","An intercolumniation of four diameters or more &mdash; too wide for a stone architrave to bear.","V"],
+    ["hypaethral","Open to the sky; a temple with no roof over its central space.","V"],
+    ["peripteral","Having a single row of columns all round the cella.","V"],
+    ["dipteral","Having a double row of columns all round the cella.","V"],
+    ["pseudodipteral","Laid out as a dipteral temple, but with the inner row of columns left out.","V"],
+    ["prostyle","Having a portico of columns across the front only.","V"],
+    ["amphiprostyle","Having porticoes of columns at both front and rear, but none along the flanks.","V"],
+    ["in antis","With the columns set between the projecting side walls of the cella.","V"],
+    ["cella","The enclosed body of a temple, which houses the image of the god.","V"],
+    ["pronaos","The vestibule before the cella, formed by the projecting side walls and the columns between them.","V"],
+    ["module","The unit of measure &mdash; generally the lower semi-diameter of the column &mdash; by which the parts of an order are proportioned.","V"],
+    ["ordinatio","The giving of due measure to the parts of a work severally, and their agreement with the whole.","V"],
+    ["dispositio","The apt placing of things, and the elegant effect of the work in its arrangement.","V"],
+    ["eurythmia","Beauty and fitness in the adjustment of the members; graceful proportion.","V"],
+    ["symmetria","A proper agreement between the members of the work, and a relation of each part to the whole.","V"],
+    ["decor","The faultless correctness of a work composed of approved details; propriety.","V"],
+    ["distributio","The proper management of materials and site, and a thrifty balance of the cost.","V"],
+    ["composite","The fifth order &mdash; Ionic volutes over Corinthian leaves &mdash; codified in the Renaissance and NOT described by Vitruvius.","L"],
+    ["tuscan","The plainest of the orders, unfluted and without ornament, which Vitruvius describes as the Etruscan manner.","V"],
+    ["hermogenes","The Hellenistic architect whom Vitruvius credits with perfecting the eustyle arrangement.","V"],
+    ["de architectura","The treatise in ten books, written for Augustus, which is the only complete work on architecture to survive from antiquity.","V"],
+    ["firmitas","Soundness &mdash; the first of the three qualities Vitruvius demands of every building.","V"],
+    ["utilitas","Usefulness &mdash; the second of the three qualities Vitruvius demands of every building.","V"],
+    ["venustas","Beauty &mdash; the third of the three qualities Vitruvius demands of every building.","V"]
+  ]
+};
+
+/* accepted spelling variants beyond normalisation */
+const ALT = {
+  "guttae":["gutta"],
+  "dentil":["dentils"],
+  "acroterion":["acroteria","akroterion"],
+  "facade":["facade"],
+  "egg and dart":["egg and tongue","eggs and darts"],
+  "eurythmia":["eurythmy","eurhythmy","eurhythmia"],
+  "symmetria":["symmetry"],
+  "distributio":["distribution","economy"],
+  "ordinatio":["order","ordination"],
+  "dispositio":["disposition","arrangement"],
+  "decor":["propriety"],
+  "de architectura":["ten books on architecture","the ten books on architecture"],
+  "composite":["composite order","the composite"],
+  "tuscan":["tuscan order"],
+  "cyma recta":["cima recta"],
+  "cyma reversa":["cima reversa","ogee"],
+  "in antis":["antis"],
+  "pseudodipteral":["pseudo dipteral"],
+  "facade ":["front"]
+};
+
+const LEGS = [
+  { key:"forum",    numeral:"I",   name:"The Forum",
+    sub:"The parts of a building, plainly named",
+    intro:"You cut across the Forum with the crowd against you. These are the words a first-year is expected to have already."
+  },
+  { key:"via",      numeral:"II",  name:"The Via Appia",
+    sub:"The grammar of the orders",
+    intro:"Out through the gate and onto the stones. Mouldings and members now &mdash; the vocabulary that separates someone who likes buildings from someone who can read one."
+  },
+  { key:"basilica", numeral:"III", name:"The Steps of the Basilica",
+    sub:"Vitruvius in his own words",
+    intro:"You can hear him. Book III, the spacing of columns. If you fail here you fail in front of the man himself."
+  }
+];
+
+const CHARIOTS = {
+  biga: {
+    name:"Biga", gloss:"Two horses",
+    blurb:"Light, quick and unforgiving. Least time in the clock, but you cover ground fast. For someone who already knows their mouldings.",
+    time:46, perCorrect:4, fruitMul:1.0, pts:1.35
+  },
+  quadriga: {
+    name:"Quadriga", gloss:"Four horses",
+    blurb:"Heavy, slow, and wide enough to sweep up everything by the roadside. The most forgiving cart in the yard. Start here.",
+    time:58, perCorrect:3, fruitMul:1.7, pts:1.0
+  },
+  carpentum: {
+    name:"Carpentum", gloss:"The scholar's cart",
+    blurb:"Covered, dignified and no use in a hurry. Knowing the answer is the only thing that moves it &mdash; but knowing it moves it a very long way.",
+    time:40, perCorrect:8, fruitMul:0.6, pts:1.55
+  }
+};
+
+const Q_PER_LEG = 8;
+
+/* ============================================================
+   2. DRAWN ART  (replaced by assets/*.png when those exist)
+   ============================================================ */
+
+function art(svg, file, cls){
+  const src = "assets/" + file;
+  return svg + '<img class="' + (cls||"") + '" src="' + src +
+         '" alt="" onerror="this.remove()">';
+}
+
+const SVG_CHARIOT = {
+  biga: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.5"
+    stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="xMinYMax meet">
+    <circle cx="52" cy="108" r="21"/><circle cx="52" cy="108" r="4"/>
+    <path d="M52 87v42M31 108h42M37 93l30 30M67 93l-30 30"/>
+    <path d="M30 96h44l-5 -26h-34z"/><path d="M30 82h44"/>
+    <path d="M74 88 L120 96"/>
+    <path d="M118 96q10-30 30-30 14 0 20 10l16 4 8-8 6 10-10 6-4 16-6-2-4 14-8-2 3-14"/>
+    <path d="M138 78q6 22 2 44M164 84q4 20 0 38"/>
+    <path d="M150 66q-4-12 2-18"/>
+    <path d="M150 62l-6-8 8 2 4-8 3 9 8-2z" opacity=".55"/>
+    <path d="M62 74q4-14 14-16" opacity=".8"/>
+  </svg>`,
+  quadriga: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.5"
+    stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="xMinYMax meet">
+    <circle cx="48" cy="106" r="23"/><circle cx="48" cy="106" r="4"/>
+    <path d="M48 83v46M25 106h46M32 90l32 32M64 90l-32 32"/>
+    <path d="M24 94h50l-6 -30h-38z"/><path d="M24 78h50"/>
+    <path d="M74 86 L116 94"/>
+    <path d="M114 94q10-32 32-32 15 0 21 11l18 4 9-9 6 11-11 6-4 18-7-2-4 15-8-2 3-15"/>
+    <path d="M136 74q7 24 2 48M164 80q5 22 0 42"/>
+    <path d="M120 100q10-26 30-26 13 0 19 9" opacity=".55"/>
+    <path d="M126 106q9-22 27-22" opacity=".35"/>
+    <path d="M148 62q-4-13 2-19"/>
+    <path d="M148 58l-6-9 8 3 4-9 4 10 8-3z" opacity=".55"/>
+  </svg>`,
+  carpentum: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.5"
+    stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="xMinYMax meet">
+    <circle cx="44" cy="110" r="18"/><circle cx="44" cy="110" r="3.5"/>
+    <circle cx="92" cy="110" r="18"/><circle cx="92" cy="110" r="3.5"/>
+    <path d="M26 96h84v-6H26z"/>
+    <path d="M28 90V64q0-14 26-14h32q26 0 26 14v26"/>
+    <path d="M28 64q26-10 84 0"/>
+    <path d="M46 90V56M68 90V52M90 90V56" opacity=".5"/>
+    <path d="M112 84 L146 92"/>
+    <path d="M144 92q9-28 28-28 13 0 18 10l15 3 8-8 5 10-9 5-4 15-6-2-3 13-7-2 3-13"/>
+    <path d="M162 76q6 20 2 40M186 82q4 18 0 34"/>
+    <path d="M174 64q-4-11 2-17"/>
+    <path d="M20 74h8M20 80h8" opacity=".5"/>
+  </svg>`
+};
+
+const SVG_POM = `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6"
+  stroke-linecap="round" stroke-linejoin="round" style="color:var(--pom)">
+  <circle cx="32" cy="37" r="20" fill="color-mix(in srgb, currentColor 22%, transparent)"/>
+  <path d="M32 17v-6M32 11l-6-5 6 1 1-6 3 6 6-1-4 5z"/>
+  <path d="M24 32q4 6 0 12M40 32q-4 6 0 12M32 30v22" opacity=".6"/>
+</svg>`;
+
+const SVG_FIG = `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6"
+  stroke-linecap="round" stroke-linejoin="round" style="color:var(--fig)">
+  <path d="M32 15q14 6 14 22 0 15-14 15T18 37q0-16 14-22z"
+        fill="color-mix(in srgb, currentColor 22%, transparent)"/>
+  <path d="M32 15q-2-6 3-9M35 8q6-2 9 2-5 4-9 1" opacity=".8"/>
+  <path d="M26 32q3 8 0 14M38 32q-3 8 0 14" opacity=".5"/>
+</svg>`;
+
+const SVG_SCROLLFIG = `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6"
+  stroke-linecap="round" stroke-linejoin="round" style="color:var(--brass)">
+  <path d="M32 15q14 6 14 22 0 15-14 15T18 37q0-16 14-22z"
+        fill="color-mix(in srgb, currentColor 26%, transparent)"/>
+  <path d="M32 15q-2-6 3-9M35 8q6-2 9 2-5 4-9 1" opacity=".8"/>
+  <path d="M23 34h18M23 40h18M23 46h12" stroke-width="1.8"/>
+</svg>`;
+
+const SVG_SCENERY = `<svg viewBox="0 0 800 200" fill="none" stroke="currentColor" stroke-width="1.4"
+  preserveAspectRatio="none">
+  <path d="M0 190h800"/>
+  <path d="M20 190v-52q0-16 12-16t12 16v52" />
+  <path d="M60 190V96h180v94M60 118h180M60 96l90-26 90 26"/>
+  <path d="M96 190v-46h24v46M148 190v-46h24v46M200 190v-46h24v46"/>
+  <path d="M270 190v-64q0-20 14-20t14 20v64"/>
+  <path d="M320 190V80m0 0h150v110M320 110h150M320 80l75-22 75 22"/>
+  <path d="M352 190v-40h22v40M406 190v-40h22v40"/>
+  <path d="M500 190v-70q0-18 13-18t13 18v70"/>
+  <path d="M548 190v-56h30v56M548 134q15-16 30 0M590 190v-56h30v56M590 134q15-16 30 0M632 190v-56h30v56M632 134q15-16 30 0"/>
+  <path d="M540 124h140v-10H540z"/>
+  <path d="M700 190v-58q0-17 12-17t12 17v58"/>
+  <path d="M744 190v-40h40v40M744 150l20-14 20 14"/>
+</svg>`;
+
+/* ============================================================
+   3. HELPERS
+   ============================================================ */
+
+const $  = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
+
+/* forgiving comparison: case, accents, apostrophes, hyphens,
+   articles and doubled spaces are all discarded */
+function norm(s){
+  return String(s)
+    .toLowerCase()
+    .normalize("NFD").replace(/[̀-ͯ]/g,"")
+    .replace(/&mdash;|&amp;/g," ")
+    /* every apostrophe, hyphen and stop falls out here too */
+    .replace(/[^a-z0-9]+/g," ")
+    .replace(/\b(the|a|an|of)\b/g," ")
+    .trim()
+    .replace(/\s+/g," ");
+}
+
+function lev(a,b){
+  if(a === b) return 0;
+  const m = a.length, n = b.length;
+  if(!m) return n; if(!n) return m;
+  let prev = Array.from({length:n+1},(_,i)=>i), cur = new Array(n+1);
+  for(let i=1;i<=m;i++){
+    cur[0] = i;
+    for(let j=1;j<=n;j++){
+      cur[j] = Math.min(prev[j]+1, cur[j-1]+1, prev[j-1] + (a[i-1]===b[j-1]?0:1));
+    }
+    [prev,cur] = [cur,prev];
+  }
+  return prev[n];
+}
+
+function judge(input, term){
+  const got = norm(input);
+  if(!got) return "empty";
+  const wants = [norm(term)].concat((ALT[term]||[]).map(norm));
+  if(wants.includes(got)) return "right";
+  for(const w of wants){
+    if(w.length > 5 && lev(got,w) <= 2) return "near";
+    if(w.length > 9 && lev(got,w) <= 3) return "near";
+  }
+  return "wrong";
+}
+
+function shuffle(a){
+  const r = a.slice();
+  for(let i=r.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [r[i],r[j]] = [r[j],r[i]]; }
+  return r;
+}
+
+/* strip the entity markup used in definitions, for plain contexts */
+function plain(s){ return String(s).replace(/&mdash;/g,"—").replace(/&amp;/g,"&"); }
+
+const isTouch = window.matchMedia("(hover: none)").matches ||
+                ("ontouchstart" in window && window.innerWidth < 900);
+
+/* ============================================================
+   4. STATE
+   ============================================================ */
+
+const S = {
+  chariot: "quadriga",
+  mode: isTouch ? "tap" : "type",
+  legIdx: 0,
+  qIdx: 0,
+  queue: [],
+  time: 0,
+  maxTime: 0,
+  score: 0,
+  streak: 0,
+  bestStreak: 0,
+  correct: 0,
+  answered: 0,
+  fruitPopped: 0,
+  missed: [],
+  marks: [],
+  running: false,
+  paused: false,
+  retried: false,
+  lastTick: 0,
+  spawnAt: 0,
+  scrollAt: 0,
+  raf: 0,
+  tutStep: 0
+};
+
+/* ============================================================
+   5. SCREENS
+   ============================================================ */
+
+const SCREENS = ["title","chariot","tut","game","result","script","how"];
+let priorScreen = "title";
+
+function show(which){
+  const cur = SCREENS.find(s => !$("#screen-"+s).hidden);
+  if(cur && cur !== which && which !== "script" && which !== "how") priorScreen = cur;
+  else if(cur && (which === "script" || which === "how")) priorScreen = cur;
+  SCREENS.forEach(s => { $("#screen-"+s).hidden = (s !== which); });
+  const heads = {
+    title:"Frontispiece", chariot:"The Yard", tut:"Instruction",
+    game:"", result:"", script:"Scriptorium", how:"Instruction"
+  };
+  if(which === "game" || which === "result"){
+    const L = LEGS[Math.min(S.legIdx, LEGS.length-1)];
+    $("#plate-no").innerHTML = "Plate " + L.numeral + " &mdash; <b>" + L.name + "</b>";
+  } else {
+    $("#plate-no").innerHTML = "Plate &mdash; <b>" + heads[which] + "</b>";
+  }
+  $("#screen-"+which).scrollTop = 0;
+}
+
+/* ============================================================
+   6. CHARIOT SCREEN
+   ============================================================ */
+
+function buildChariots(){
+  const g = $("#chariot-grid");
+  g.innerHTML = "";
+  Object.entries(CHARIOTS).forEach(([key,c]) => {
+    const b = document.createElement("button");
+    b.className = "chariot-card";
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(key === S.chariot));
+    b.dataset.key = key;
+    b.innerHTML =
+      '<div class="art">' + art(SVG_CHARIOT[key], "chariot-" + key + ".png") + '</div>' +
+      '<div><div class="chariot-name">' + c.name + '</div>' +
+      '<div class="chariot-gloss">' + c.gloss + '</div></div>' +
+      '<p>' + c.blurb + '</p>' +
+      '<div class="spec">' +
+        '<span>Clepsydra</span><b>' + c.time + 's</b>' +
+        '<span>Per correct answer</span><b>+' + c.perCorrect + 's</b>' +
+        '<span>Fruit worth</span><b>&times;' + c.fruitMul.toFixed(1) + '</b>' +
+      '</div>';
+    b.addEventListener("click", () => {
+      S.chariot = key;
+      $$(".chariot-card").forEach(c2 => c2.setAttribute("aria-pressed", String(c2.dataset.key === key)));
+    });
+    g.appendChild(b);
+  });
+}
+
+function paintMode(){
+  $("#mode-type").setAttribute("aria-pressed", String(S.mode === "type"));
+  $("#mode-tap").setAttribute("aria-pressed",  String(S.mode === "tap"));
+  $("#mode-note").innerHTML = S.mode === "type"
+    ? "The scroll gives you a definition and you type the term. Spelling is forgiving &mdash; case, apostrophes, hyphens and accents are all ignored. Best with a keyboard."
+    : "The scroll gives you a term and you tap the right meaning from three. Best on a phone.";
+}
+
+/* ============================================================
+   7. TUTORIAL
+   ============================================================ */
+
+const TAP = isTouch ? "Tap" : "Click";
+const TAPPING = isTouch ? "tapping" : "clicking";
+
+const TUT = [
+  {
+    h: "You are late",
+    p: "Vitruvius is teaching this morning and you are on the wrong side of Rome. Three legs of road lie between you and the lecture hall, and he will not seat a student who has not read.",
+    fig: () => '<div style="width:78%;height:78%;position:relative">' +
+               art(SVG_CHARIOT[S.chariot], "chariot-" + S.chariot + ".png") + '</div>'
+  },
+  {
+    h: TAP + " the fruit for time",
+    p: "The water clock is draining from the moment you set off. Pomegranates and figs cross the road as you pass the sellers &mdash; burst one and you buy a few more seconds. It is the only way to make time.",
+    fig: () => '<div style="display:flex;gap:26px;align-items:center">' +
+               '<div style="width:74px">' + art(SVG_POM,"pomegranate.png") + '</div>' +
+               '<div style="width:74px">' + art(SVG_FIG,"fig.png") + '</div></div>'
+  },
+  {
+    h: "A gilded fig carries a scroll",
+    p: "Burst it and the scroll unrolls with a term of the classical language on it. Answer correctly and the horses surge; answer wrongly and you lose ground &mdash; but the scroll always tells you what the answer was before it furls.",
+    fig: () => '<div style="width:82px;position:relative">' + art(SVG_SCROLLFIG,"fig.png") + '</div>'
+  },
+  {
+    h: "The road is measured in modules",
+    p: "Eight scrolls to a leg, three legs to the lecture. At the door Vitruvius grades you on his own three terms &mdash; firmitas for what you knew, utilitas for how fast you got there, venustas for how well you did it.",
+    fig: () => '<div style="width:80%"><div style="height:1px;background:var(--rule)"></div>' +
+               '<div style="display:flex;justify-content:space-between;margin-top:-1px">' +
+               Array.from({length:9},(_,i)=>'<div style="width:'+(i%4===0?2:1)+'px;height:'+(i%4===0?14:8)+'px;background:var(--'+(i<5?'pom':'rule')+')"></div>').join("") +
+               '</div><div style="font-family:var(--f-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);margin-top:9px;text-align:center">4 / 8 modules</div></div>'
+  }
+];
+
+function paintTut(){
+  const t = TUT[S.tutStep];
+  $("#tut-step").textContent = "Step " + (S.tutStep+1) + " of " + TUT.length;
+  $("#tut-h").textContent = t.h;
+  $("#tut-p").innerHTML = t.p;
+  $("#tut-fig").innerHTML = t.fig();
+  $("#tut-dots").innerHTML = TUT.map((_,i)=>'<i class="'+(i===S.tutStep?"on":"")+'"></i>').join("");
+  $("#tut-next").textContent = S.tutStep === TUT.length-1 ? "Set out" : "Next";
+}
+
+/* ============================================================
+   8. THE RUN
+   ============================================================ */
+
+function startRun(){
+  S.legIdx = 0;
+  S.score = 0; S.streak = 0; S.bestStreak = 0;
+  S.correct = 0; S.answered = 0; S.fruitPopped = 0;
+  S.missed = [];
+  startLeg();
+}
+
+function startLeg(){
+  const c = CHARIOTS[S.chariot];
+  const pool = TERMS[LEGS[S.legIdx].key];
+  S.queue = shuffle(pool).slice(0, Q_PER_LEG);
+  S.qIdx = 0;
+  S.marks = new Array(Q_PER_LEG).fill(null);
+  S.maxTime = c.time;
+  S.time = c.time;
+  S.paused = false;
+  S.running = true;
+  S.lastTick = performance.now();
+  S.spawnAt = 0;
+  S.scrollAt = 1400;
+
+  $("#chariot-art").innerHTML = art(SVG_CHARIOT[S.chariot], "chariot-" + S.chariot + ".png");
+  $("#scenery").innerHTML = art(SVG_SCENERY, "road.png") + art(SVG_SCENERY, "road.png");
+  clearRoad();
+  buildTicks();
+  paintHUD();
+  show("game");
+  S.raf = requestAnimationFrame(loop);
+}
+
+function buildTicks(){
+  const t = $("#scale-track");
+  t.querySelectorAll(".scale-tick").forEach(e => e.remove());
+  for(let i=0;i<=Q_PER_LEG;i++){
+    const d = document.createElement("div");
+    d.className = "scale-tick";
+    d.dataset.i = i;
+    d.style.left = (i / Q_PER_LEG * 100) + "%";
+    t.appendChild(d);
+  }
+}
+
+function clearRoad(){
+  $$("#road .fruit, #road .burst, #road .scroll-veil").forEach(e => e.remove());
+}
+
+function paintHUD(){
+  $("#hud-score").textContent = Math.round(S.score);
+  $("#hud-q").textContent = S.qIdx + "/" + Q_PER_LEG;
+  $("#hud-time").textContent = Math.max(0, Math.ceil(S.time));
+  const pct = Math.max(0, Math.min(1, S.time / S.maxTime));
+  $("#clepsydra-fill").style.height = (pct*100) + "%";
+  $("#clepsydra").classList.toggle("low", pct < 0.28);
+  $("#streak-flag").hidden = S.streak < 2;
+  $("#hud-streak").textContent = S.streak;
+  $("#scale-mark").style.left = (S.qIdx / Q_PER_LEG * 100) + "%";
+  $("#scale-label").textContent = S.qIdx + " / " + Q_PER_LEG + " modules";
+}
+
+/* --- fruit --- */
+
+function spawnFruit(scrolly){
+  const road = $("#road");
+  const W = road.clientWidth, H = road.clientHeight;
+  if(!W) return;
+  const el = document.createElement("div");
+  el.className = "fruit" + (scrolly ? " scrollfig" : "");
+  const isPom = !scrolly && Math.random() < 0.55;
+  el.innerHTML = scrolly ? art(SVG_SCROLLFIG,"fig.png")
+                         : (isPom ? art(SVG_POM,"pomegranate.png") : art(SVG_FIG,"fig.png"));
+  const size = scrolly ? 78 : 56;
+  const topMin = H * 0.10, topMax = Math.max(topMin, H * 0.62);
+  const y = topMin + Math.random() * (topMax - topMin);
+  el.style.left = (W + size) + "px";
+  el.style.top  = y + "px";
+  el._x = W + size;
+  el._y = y;
+  el._vx = scrolly ? -(0.075 * (H>260?1:0.85)) : -(0.13 + Math.random()*0.07);
+  el._amp = scrolly ? 5 : 9 + Math.random()*7;
+  el._ph = Math.random()*6.28;
+  el._kind = scrolly ? "scroll" : (isPom ? "pom" : "fig");
+  el.addEventListener("pointerdown", ev => { ev.preventDefault(); popFruit(el); });
+  road.appendChild(el);
+}
+
+function popFruit(el){
+  if(!S.running || S.paused || el._dead) return;
+  el._dead = true;
+  const c = CHARIOTS[S.chariot];
+  const road = $("#road");
+  const b = document.createElement("div");
+  b.className = "burst";
+  b.style.left = el._x + "px";
+  b.style.top  = el._y + "px";
+
+  if(el._kind === "scroll"){
+    b.style.color = "var(--brass)";
+    b.textContent = "SCROLL";
+    el.remove(); road.appendChild(b);
+    setTimeout(()=>b.remove(), 760);
+    openScroll();
+    return;
+  }
+
+  const isPom = el._kind === "pom";
+  const secs = (isPom ? 2.4 : 1.4) * c.fruitMul;
+  const pts  = Math.round((isPom ? 20 : 34) * c.pts * Math.max(1, S.streak));
+  S.time = Math.min(S.maxTime, S.time + secs);
+  S.score += pts;
+  S.fruitPopped++;
+  b.style.color = isPom ? "var(--pom)" : "var(--fig)";
+  b.textContent = "+" + secs.toFixed(1) + "s  +" + pts;
+  el.remove(); road.appendChild(b);
+  setTimeout(()=>b.remove(), 760);
+  paintHUD();
+}
+
+/* --- loop --- */
+
+function loop(now){
+  if(!S.running){ return; }
+  const dt = Math.min(60, now - S.lastTick);
+  S.lastTick = now;
+
+  if(!S.paused){
+    S.time -= dt / 1000;
+
+    S.spawnAt -= dt;
+    if(S.spawnAt <= 0){
+      spawnFruit(false);
+      S.spawnAt = 620 + Math.random()*620;
+    }
+
+    S.scrollAt -= dt;
+    const scrollOut = $$("#road .fruit.scrollfig").length;
+    if(S.scrollAt <= 0 && scrollOut === 0 && S.qIdx < Q_PER_LEG){
+      spawnFruit(true);
+      S.scrollAt = 99999;
+    }
+
+    const road = $("#road");
+    const W = road.clientWidth;
+    $$("#road .fruit").forEach(el => {
+      el._x += el._vx * dt;
+      const wob = Math.sin((now/540) + el._ph) * el._amp;
+      el.style.transform = "translate(" + (el._x - parseFloat(el.style.left)) + "px," + wob + "px)";
+      if(el._x < -110){
+        if(el._kind === "scroll"){
+          /* the scroll must not be lost — send it round again */
+          el._x = W + 90;
+          el.style.left = el._x + "px";
+        } else {
+          el.remove();
+        }
+      }
+    });
+
+    paintHUD();
+
+    if(S.time <= 0){
+      S.time = 0;
+      endLeg(false);
+      return;
+    }
+  }
+
+  S.raf = requestAnimationFrame(loop);
+}
+
+/* ============================================================
+   9. THE SCROLL
+   ============================================================ */
+
+function openScroll(){
+  if(S.qIdx >= Q_PER_LEG) return;
+  S.paused = true;
+  S.retried = false;
+  const entry = S.queue[S.qIdx];
+  renderScroll(entry, null);
+}
+
+function renderScroll(entry, verdict){
+  const [term, def, src] = entry;
+  const road = $("#road");
+  road.querySelectorAll(".scroll-veil").forEach(e => e.remove());
+
+  const veil = document.createElement("div");
+  veil.className = "scroll-veil";
+  const s = document.createElement("div");
+  s.className = "scroll";
+  veil.appendChild(s);
+
+  const head = '<div class="scroll-rod"></div>' +
+    '<div class="scroll-ask">Scroll ' + (S.qIdx+1) + ' of ' + Q_PER_LEG +
+    ' &middot; ' + LEGS[S.legIdx].name + '</div>';
+
+  if(S.mode === "type"){
+    s.innerHTML = head +
+      '<p class="scroll-prompt">' + def + '</p>' +
+      '<form class="answer-form" id="ans-form" autocomplete="off">' +
+        '<input id="ans-input" type="text" inputmode="text" autocapitalize="off" ' +
+          'autocorrect="off" spellcheck="false" placeholder="Name the term" ' +
+          'aria-label="Type the architectural term">' +
+        '<button class="btn btn-primary" type="submit">Answer</button>' +
+      '</form>' +
+      '<div id="verdict-slot"></div>';
+  } else {
+    const others = shuffle(TERMS[LEGS[S.legIdx].key].filter(t => t[0] !== term)).slice(0,2);
+    const opts = shuffle([[def,true]].concat(others.map(o => [o[1], false])));
+    s.innerHTML = head +
+      '<p class="scroll-prompt term">' + term + '</p>' +
+      '<div class="choices" id="choices">' +
+        opts.map((o,i) => '<button class="choice" type="button" data-right="' + o[1] +
+                          '" data-i="' + i + '">' + o[0] + '</button>').join("") +
+      '</div>' +
+      '<div id="verdict-slot"></div>';
+  }
+
+  road.appendChild(veil);
+
+  if(S.mode === "type"){
+    const inp = s.querySelector("#ans-input");
+    setTimeout(()=>{ try{ inp.focus({preventScroll:true}); }catch(e){} }, 40);
+    s.querySelector("#ans-form").addEventListener("submit", ev => {
+      ev.preventDefault();
+      submitTyped(entry, inp.value);
+    });
+  } else {
+    s.querySelectorAll(".choice").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const right = btn.dataset.right === "true";
+        s.querySelectorAll(".choice").forEach(b => {
+          b.disabled = true;
+          if(b.dataset.right === "true") b.classList.add("right");
+        });
+        if(!right) btn.classList.add("wrong");
+        settle(entry, right);
+      });
+    });
+  }
+}
+
+function submitTyped(entry, value){
+  const verdict = judge(value, entry[0]);
+  if(verdict === "empty") return;
+  if(verdict === "near" && !S.retried){
+    S.retried = true;
+    const slot = $("#verdict-slot");
+    slot.innerHTML =
+      '<div class="verdict near"><span class="verdict-head">Close &mdash; check the spelling</span>' +
+      '<p>You have very nearly got it. Try once more.</p></div>';
+    const inp = $("#ans-input");
+    inp.select();
+    return;
+  }
+  settle(entry, verdict === "right" || verdict === "near");
+}
+
+function settle(entry, right){
+  const [term, def, src] = entry;
+  const c = CHARIOTS[S.chariot];
+  S.answered++;
+
+  if(right){
+    S.correct++;
+    S.streak++;
+    S.bestStreak = Math.max(S.bestStreak, S.streak);
+    S.time = Math.min(S.maxTime, S.time + c.perCorrect);
+    S.score += Math.round(120 * c.pts * Math.min(5, S.streak));
+    S.marks[S.qIdx] = "done";
+  } else {
+    S.streak = 0;
+    S.time = Math.max(0.6, S.time - 3);
+    S.missed.push(entry);
+    S.marks[S.qIdx] = "miss";
+  }
+
+  const tick = $('#scale-track .scale-tick[data-i="' + S.qIdx + '"]');
+  if(tick) tick.classList.add(right ? "done" : "miss");
+
+  const slot = $("#verdict-slot");
+  const srcTxt = src === "V"
+    ? "Vitruvius, De architectura"
+    : "Later codification &mdash; Serlio, Vignola, Palladio and after";
+
+  slot.innerHTML =
+    '<div class="verdict ' + (right ? "good" : "bad") + '">' +
+      '<span class="verdict-head">' +
+        (right ? "Correct &middot; +" + c.perCorrect + "s" : "Not that &middot; &minus;3s") +
+      '</span>' +
+      '<span class="term-was">' + term + '</span>' +
+      '<p>' + def + '</p>' +
+      '<span class="cite">' + srcTxt + '</span>' +
+    '</div>' +
+    '<div class="btn-row" style="margin-top:13px">' +
+      '<button class="btn btn-primary" id="scroll-on">' +
+        (S.qIdx + 1 >= Q_PER_LEG ? "Drive on" : "Furl the scroll") +
+      '</button>' +
+    '</div>';
+
+  const form = $("#ans-form");
+  if(form) form.querySelectorAll("input,button").forEach(e => e.disabled = true);
+
+  const on = $("#scroll-on");
+  on.focus({preventScroll:true});
+  on.addEventListener("click", () => {
+    S.qIdx++;
+    $$("#road .scroll-veil").forEach(e => e.remove());
+    paintHUD();
+    if(S.qIdx >= Q_PER_LEG){ endLeg(true); return; }
+    S.paused = false;
+    S.lastTick = performance.now();
+    S.scrollAt = 3600 + Math.random()*1800;
+  });
+
+  paintHUD();
+}
+
+/* ============================================================
+   10. END OF LEG / ARRIVAL
+   ============================================================ */
+
+function endLeg(finished){
+  S.running = false;
+  S.paused = true;
+  cancelAnimationFrame(S.raf);
+  clearRoad();
+
+  const last = S.legIdx >= LEGS.length - 1;
+
+  if(!finished){ renderArrival(false); return; }
+  if(last){ renderArrival(true); return; }
+  renderInterlude();
+}
+
+function renderInterlude(){
+  const L = LEGS[S.legIdx];
+  const next = LEGS[S.legIdx + 1];
+  const acc = S.answered ? Math.round(S.correct / S.answered * 100) : 0;
+
+  $("#result-body").innerHTML =
+    '<div style="display:flex;flex-direction:column;gap:clamp(16px,3vw,26px)">' +
+    '<div><p class="eyebrow">Leg ' + L.numeral + ' cleared &middot; ' +
+      Math.ceil(S.time) + 's still in the clock</p>' +
+      '<h2 class="screen-h">' + L.name + ' is behind you</h2></div>' +
+    '<p class="lede">' + next.intro + '</p>' +
+    '<div class="spec" style="max-width:340px;border-top:1px solid var(--rule)">' +
+      '<span>Scrolls read</span><b>' + S.correct + ' / ' + S.answered + '</b>' +
+      '<span>Running accuracy</span><b>' + acc + '%</b>' +
+      '<span>Fruit burst</span><b>' + S.fruitPopped + '</b>' +
+      '<span>Score</span><b>' + Math.round(S.score) + '</b>' +
+    '</div>' +
+    (S.missed.length ? missedBlock("What you have missed so far") : "") +
+    '<div class="btn-row">' +
+      '<button class="btn btn-primary" id="res-next">Leg ' + next.numeral + ' &middot; ' + next.name + '</button>' +
+      '<button class="btn btn-quiet" id="res-quit">Stop here</button>' +
+    '</div></div>';
+
+  show("result");
+  $("#res-next").addEventListener("click", () => { S.legIdx++; startLeg(); });
+  $("#res-quit").addEventListener("click", () => show("title"));
+}
+
+function missedBlock(heading){
+  return '<div class="missed"><p class="eyebrow" style="margin-bottom:2px">' + heading + '</p>' +
+    '<dl style="margin:0">' +
+    S.missed.map(m => '<div class="missed-item"><dt>' + m[0] + '</dt><dd>' + m[1] + '</dd></div>').join("") +
+    '</dl></div>';
+}
+
+function renderArrival(arrived){
+  const total = S.answered || 1;
+  const firmitas = Math.round(S.correct / total * 100);
+  const legsDone = arrived ? LEGS.length : S.legIdx;
+  const timeLeft = Math.max(0, S.time);
+  const utilitas = arrived
+    ? Math.round(Math.min(100, 30 + (timeLeft / S.maxTime) * 70))
+    : Math.round((legsDone / LEGS.length) * 100 * 0.75);
+  const venustas = Math.round(Math.min(100,
+    (S.bestStreak / (Q_PER_LEG * 0.75)) * 55 + Math.min(45, S.fruitPopped * 1.6)));
+
+  const admitted = arrived && firmitas >= 65;
+
+  let verdictLine;
+  if(admitted && firmitas >= 90)
+    verdictLine = "He does not look up, which from Vitruvius is praise. Take the second bench.";
+  else if(admitted)
+    verdictLine = "He looks at you for slightly too long, and then nods at an empty seat at the back.";
+  else if(arrived)
+    verdictLine = "You reached the door in time, and he asked you three questions in it. Come back when you have read the thing.";
+  else
+    verdictLine = "The clock ran dry on the " + (LEGS[S.legIdx] ? LEGS[S.legIdx].name.toLowerCase() : "road") +
+                  ". By the time you reach the hall they are on Book VI.";
+
+  const bar = (label, latin, val, note) =>
+    '<div class="grade-row">' +
+      '<div class="grade-top"><b>' + latin + '</b><span>' + label + '</span>' +
+        '<span class="num">' + val + '</span></div>' +
+      '<div class="grade-bar"><i style="width:' + Math.max(2, Math.min(100, val)) + '%"></i></div>' +
+      '<p class="grade-note">' + note + '</p>' +
+    '</div>';
+
+  $("#result-body").innerHTML =
+    '<div style="display:flex;flex-direction:column;gap:clamp(16px,3vw,26px)">' +
+    '<div><p class="eyebrow">' + (arrived ? "The Basilica &middot; you are at the door" : "You did not arrive") + '</p>' +
+      '<h2 class="screen-h">' + (admitted ? "He seats you" : arrived ? "He does not seat you" : "The lecture goes on without you") + '</h2></div>' +
+    '<span class="stamp ' + (admitted ? "pass" : "fail") + '">' +
+      (admitted ? "Admitted" : "Not admitted") + '</span>' +
+    '<p class="lede">' + verdictLine + '</p>' +
+
+    '<div class="grade">' +
+      bar("What you knew","Firmitas",firmitas, S.correct + " of " + total + " scrolls answered correctly.") +
+      bar("How you travelled","Utilitas",utilitas, arrived ? "Arrived with " + Math.round(timeLeft) + "s in the clepsydra." : "Reached " + legsDone + " of " + LEGS.length + " legs.") +
+      bar("How well you did it","Venustas",venustas, "Longest streak " + S.bestStreak + "; " + S.fruitPopped + " fruit burst.") +
+    '</div>' +
+
+    '<div class="spec" style="max-width:340px;border-top:1px solid var(--rule)">' +
+      '<span>Final score</span><b>' + Math.round(S.score) + '</b>' +
+      '<span>Chariot</span><b>' + CHARIOTS[S.chariot].name + '</b>' +
+    '</div>' +
+
+    (S.missed.length ? missedBlock("Read these before you come back") : "") +
+
+    '<div class="btn-row">' +
+      '<button class="btn btn-primary" id="res-again">Run it again</button>' +
+      '<button class="btn btn-quiet" id="res-yard">Change chariot</button>' +
+      '<button class="btn btn-quiet" id="res-script">The Scriptorium</button>' +
+    '</div></div>';
+
+  show("result");
+  $("#res-again").addEventListener("click", startRun);
+  $("#res-yard").addEventListener("click", () => show("chariot"));
+  $("#res-script").addEventListener("click", () => show("script"));
+}
+
+/* ============================================================
+   11. SCRIPTORIUM
+   ============================================================ */
+
+function buildScriptorium(){
+  const body = $("#script-body");
+  body.innerHTML = LEGS.map(L => {
+    const rows = TERMS[L.key].slice().sort((a,b)=>a[0].localeCompare(b[0]));
+    return '<div class="script-group">' +
+      '<div class="script-head"><b>' + L.name + '</b><span>Leg ' + L.numeral + ' &middot; ' + L.sub + '</span></div>' +
+      '<dl style="margin:0">' +
+      rows.map(r =>
+        '<div class="entry"><dt>' + r[0] + '</dt><dd>' + r[1] +
+        '<div class="src ' + (r[2]==="V"?"vitr":"") + '">' +
+        (r[2]==="V" ? "Vitruvius" : "Later codification") + '</div></dd></div>'
+      ).join("") +
+      '</dl></div>';
+  }).join("");
+}
+
+/* ============================================================
+   12. WIRING
+   ============================================================ */
+
+$("#go-start").addEventListener("click", () => { buildChariots(); paintMode(); show("chariot"); });
+$("#go-script").addEventListener("click", () => show("script"));
+$("#go-how").addEventListener("click", () => show("how"));
+$("#foot-script").addEventListener("click", () => show("script"));
+$("#foot-how").addEventListener("click", () => show("how"));
+$("#script-back").addEventListener("click", () => show(priorScreen));
+$("#how-back").addEventListener("click", () => show(priorScreen));
+$("#back-title").addEventListener("click", () => show("title"));
+
+$("#mode-type").addEventListener("click", () => { S.mode = "type"; paintMode(); });
+$("#mode-tap").addEventListener("click",  () => { S.mode = "tap";  paintMode(); });
+
+$("#go-tut").addEventListener("click", () => {
+  if(sessionStorage.getItem("ltv-tut") === "seen"){ startRun(); return; }
+  S.tutStep = 0; paintTut(); show("tut");
+});
+$("#tut-next").addEventListener("click", () => {
+  if(S.tutStep < TUT.length - 1){ S.tutStep++; paintTut(); }
+  else { try{ sessionStorage.setItem("ltv-tut","seen"); }catch(e){} startRun(); }
+});
+$("#tut-skip").addEventListener("click", () => {
+  try{ sessionStorage.setItem("ltv-tut","seen"); }catch(e){}
+  startRun();
+});
+
+$("#btn-quit").addEventListener("click", () => {
+  S.running = false; S.paused = true;
+  cancelAnimationFrame(S.raf);
+  clearRoad();
+  renderArrival(false);
+});
+
+document.addEventListener("keydown", ev => {
+  if(ev.key === "Escape" && !$("#screen-game").hidden){
+    $("#btn-quit").click();
+  }
+});
+
+/* pause the clock if the page is hidden — no losing to a phone call */
+document.addEventListener("visibilitychange", () => {
+  if(document.hidden){ S.lastTick = performance.now(); }
+  else { S.lastTick = performance.now(); }
+});
+
+buildScriptorium();
+show("title");
+</script>
+</body>
+</html>

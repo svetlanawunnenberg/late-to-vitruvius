@@ -1,0 +1,14 @@
+# nothing private should ever be in this repository — it is public
+.env
+.env.*
+!.env.example
+
+# scratch and test output
+_*.html
+_*.png
+*.tmp
+
+# OS junk
+Thumbs.db
+desktop.ini
+.DS_Store
