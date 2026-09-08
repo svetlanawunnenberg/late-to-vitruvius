@@ -399,48 +399,55 @@ h2.screen-h{
 #streak-flag{ color:var(--pom); font-weight:600; }
 
 /* the road */
+/* ============================================================
+   THE ROAD — seen from behind the driver.
+   The backdrop does the work: each leg has a far plate and a near
+   plate of the same view, and --dolly (0..1, written from how many
+   modules you have covered) carries you from one to the other. The
+   road is drawn in the artwork, so nothing here draws paving.
+   ============================================================ */
 .road{
   position:relative;
   flex:1;
-  min-height:230px;
+  min-height:250px;
   overflow:hidden;
-  background:linear-gradient(var(--sky-hi) 0%, var(--sky-hi) 58%, var(--ground) 58%, var(--ground) 100%);
+  background:var(--sky-lo);
   cursor:crosshair;
   touch-action:manipulation;
   user-select:none;
   -webkit-user-select:none;
+  --dolly:0;
 }
-/* horizon scenery — drawn, replaced by assets/road.png if present */
-.scenery{
+.stage{ position:absolute; inset:0; overflow:hidden; }
+.stage img{
   position:absolute;
-  left:0; bottom:32%;
-  width:200%;
-  height:46%;
-  color:var(--ink-faint);
-  opacity:.34;
-  animation:pan 26s linear infinite;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center 42%;
+  transform-origin:50% 46%;
+  will-change:transform, opacity;
+  transition:opacity .9s ease, transform .9s ease;
 }
-.scenery svg, .scenery img{ width:50%; height:100%; display:block; float:left; }
-.scenery img{ object-fit:fill; }
-@keyframes pan{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
-
-/* paving */
-.paving{
-  position:absolute;
-  left:0; bottom:0;
-  width:200%;
-  height:32%;
-  background-image:repeating-linear-gradient(
-    90deg,
-    transparent 0 46px,
-    var(--rule-hair) 46px 47px
-  ),
-  repeating-linear-gradient(
-    0deg,
-    transparent 0 22px,
-    var(--rule-hair) 22px 23px
-  );
-  animation:pan 3.1s linear infinite;
+/* the far plate pulls back and fades as the near plate comes on */
+.stage .far {
+  opacity:calc(1 - var(--dolly));
+  transform:scale(calc(1 + var(--dolly) * 0.30));
+}
+.stage .near{
+  opacity:var(--dolly);
+  transform:scale(calc(0.88 + var(--dolly) * 0.28));
+}
+/* the plates are cream; in the dark theme they are a lantern slide */
+:root:not([data-theme="light"]) .stage img{ filter:none; }
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .stage img{
+    filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(1.05);
+  }
+}
+:root[data-theme="dark"] .stage img{
+  filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(1.05);
 }
 
 /* ============================================================
@@ -470,31 +477,40 @@ h2.screen-h{
 }
 .piece img{ object-fit:contain; }
 
+/* your own chariot, seen from behind, holding the centre of the road */
 .chariot{
   position:absolute;
-  left:7%;
-  bottom:6%;
-  width:clamp(120px,21vw,210px);
-  height:clamp(84px,15vw,150px);
+  left:50%;
+  bottom:-2%;
+  width:clamp(190px,42vw,430px);
+  height:clamp(150px,34vw,350px);
+  margin-left:calc(clamp(190px,42vw,430px) / -2);
   color:var(--ink);
-  animation:bob 1.05s ease-in-out infinite;
+  animation:sway 2.4s ease-in-out infinite;
   pointer-events:none;
   z-index:3;
 }
-.chariot .piece img{ object-position:bottom left; }
-@keyframes bob{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-4px);} }
+.chariot .piece img{ object-position:bottom center; }
+@keyframes sway{
+  0%,100%{ transform:translate(0,0)    rotate(0deg); }
+  25%    { transform:translate(-5px,-3px) rotate(-.5deg); }
+  75%    { transform:translate(5px,-2px)  rotate(.5deg); }
+}
 
-/* ---------- pomegranates ---------- */
+/* ---------- pomegranates ----------
+   They come up the road at you rather than across, so the size is
+   set from the transform and the box stays put. */
 .fruit{
   position:absolute;
-  width:60px; height:60px;
+  width:150px; height:150px;
+  margin:-75px 0 0 -75px;
   cursor:pointer;
   z-index:4;
   will-change:transform;
   touch-action:manipulation;
 }
 .fruit .piece > *{ pointer-events:none; }
-.fruit.scrollfruit{ width:84px; height:84px; }
+.fruit.scrollfruit{ width:190px; height:190px; margin:-95px 0 0 -95px; }
 .fruit.scrollfruit::after{
   content:"";
   position:absolute; inset:-11px;
@@ -508,11 +524,12 @@ h2.screen-h{
 
 /* the pop: the fruit splits, the seeds go everywhere */
 .fruit.popped{ pointer-events:none; }
-.fruit.popped .piece{ animation:pop-swell .5s cubic-bezier(.2,.9,.3,1) forwards; }
+.fruit.popped .piece{ animation:pop-swell .66s cubic-bezier(.2,.9,.3,1) forwards; }
 @keyframes pop-swell{
   0%  { transform:scale(1);    opacity:1; }
-  22% { transform:scale(1.22); opacity:1; }
-  100%{ transform:scale(1.05); opacity:0; }
+  18% { transform:scale(1.26); opacity:1; }
+  62% { transform:scale(1.18); opacity:1; }
+  100%{ transform:scale(1.12); opacity:0; }
 }
 /* the drawn pomegranate opens along its seam */
 .fruit.popped .pom-half-l{ animation:half-l .5s cubic-bezier(.2,.9,.3,1) forwards; }
@@ -1116,8 +1133,10 @@ html{ overscroll-behavior-y:none; }
     </div>
 
     <div class="road" id="road">
-      <div class="scenery" id="scenery" aria-hidden="true"></div>
-      <div class="paving" aria-hidden="true"></div>
+      <div class="stage" id="stage" aria-hidden="true">
+        <img class="far"  id="bg-far"  alt="" onerror="this.style.display='none'">
+        <img class="near" id="bg-near" alt="" onerror="this.style.display='none'">
+      </div>
       <div class="chariot" id="chariot-art" aria-hidden="true"></div>
       <div class="clepsydra" id="clepsydra" aria-hidden="true">
         <div class="clepsydra-fill" id="clepsydra-fill" style="height:100%"></div>
@@ -1333,18 +1352,25 @@ const ALT = {
   "facade ":["front"]
 };
 
+/* The three legs follow the drawings: you come at Rome from outside,
+   pass under the aqueduct at the gate, and finish in the streets.
+   Each leg has a far plate and a near plate of the same view — you
+   dolly from one to the other as you cover the modules. */
 const LEGS = [
-  { key:"forum",    numeral:"I",   name:"The Forum",
+  { key:"forum",    numeral:"I",   name:"Approaching Rome",
     sub:"The parts of a building, plainly named",
-    intro:"You cut across the Forum with the crowd against you. These are the words a first-year is expected to have already."
+    bg:["assets/leg1-a.jpg","assets/leg1-b.jpg"],
+    intro:"The walls are still a mile off and the cypresses are going past faster than they should. These are the words a first-year is expected to have already."
   },
-  { key:"via",      numeral:"II",  name:"The Via Appia",
+  { key:"via",      numeral:"II",  name:"The Aqua Claudia",
     sub:"The grammar of the orders",
-    intro:"Out through the gate and onto the stones. Mouldings and members now &mdash; the vocabulary that separates someone who likes buildings from someone who can read one."
+    bg:["assets/leg2-a.jpg","assets/leg2-b.jpg"],
+    intro:"Under the aqueduct and up to the gate. Mouldings and members now &mdash; the vocabulary that separates someone who likes buildings from someone who can read one."
   },
-  { key:"basilica", numeral:"III", name:"The Steps of the Basilica",
+  { key:"basilica", numeral:"III", name:"Vicus Romanus",
     sub:"Vitruvius in his own words",
-    intro:"You can hear him. Book III, the spacing of columns. If you fail here you fail in front of the man himself."
+    bg:["assets/leg3-a.jpg","assets/leg3-b.jpg"],
+    intro:"Inside the walls, and the street is narrow. You can hear him already &mdash; Book III, the spacing of columns. Fail here and you fail in front of the man himself."
   }
 ];
 
@@ -1723,7 +1749,14 @@ function startLeg(){
   S.scrollAt = 1400;
 
   $("#chariot-art").innerHTML = art(SVG_CHARIOT[S.chariot], "chariot-" + S.chariot + ".png");
-  $("#scenery").innerHTML = art(SVG_SCENERY, "road.png") + art(SVG_SCENERY, "road.png");
+
+  /* the leg's two plates: far, then near. Only this leg's pair loads. */
+  const L = LEGS[S.legIdx];
+  const far = $("#bg-far"), near = $("#bg-near");
+  far.style.display = near.style.display = "";
+  far.src  = L.bg[0];
+  near.src = L.bg[1];
+  paintDolly();
   clearRoad();
   buildTicks();
   paintHUD();
@@ -1745,6 +1778,12 @@ function buildTicks(){
 
 function clearRoad(){
   $$("#road .fruit, #road .burst, #road .seeds, #road .scroll-veil").forEach(e => e.remove());
+}
+
+/* how far down this leg you have come, 0..1 — drives the backdrop dolly */
+function paintDolly(){
+  const d = Math.max(0, Math.min(1, S.qIdx / Q_PER_LEG));
+  $("#road").style.setProperty("--dolly", d.toFixed(3));
 }
 
 function paintHUD(){
@@ -1769,19 +1808,36 @@ function spawnFruit(scrolly){
   const el = document.createElement("div");
   el.className = "fruit" + (scrolly ? " scrollfruit" : "");
   el.innerHTML = art(scrolly ? SVG_SCROLLPOM : SVG_POM, "pomegranate.png");
-  const size = scrolly ? 84 : 60;
-  const topMin = H * 0.10, topMax = Math.max(topMin, H * 0.62);
-  const y = topMin + Math.random() * (topMax - topMin);
-  el.style.left = (W + size) + "px";
-  el.style.top  = y + "px";
-  el._x = W + size;
-  el._y = y;
-  el._vx = scrolly ? -(0.075 * (H>260?1:0.85)) : -(0.13 + Math.random()*0.07);
-  el._amp = scrolly ? 5 : 9 + Math.random()*7;
-  el._ph = Math.random()*6.28;
+
+  /* it comes up the road out of the vanishing point, so it starts
+     small and near the middle and arrives large and off to one side */
+  const vx = W * (0.42 + Math.random() * 0.16);   /* the vanishing point */
+  const vy = H * 0.44;
+  const side = Math.random() < 0.5 ? -1 : 1;
+  const endX = vx + side * W * (0.20 + Math.random() * 0.36);
+  const endY = H * (0.94 + Math.random() * 0.16);
+
+  el.style.left = vx + "px";
+  el.style.top  = vy + "px";
+  el._vx = vx; el._vy = vy;
+  el._ex = endX; el._ey = endY;
+  el._t = 0;
+  el._dur = scrolly ? 5200 : (3600 + Math.random() * 1500);
+  el._ph = Math.random() * 6.28;
   el._kind = scrolly ? "scroll" : "pom";
+  el.style.transform = "translate3d(0,0,0) scale(0.12)";
   el.addEventListener("pointerdown", ev => { ev.preventDefault(); popFruit(el); });
   road.appendChild(el);
+}
+
+/* where a piece of fruit is at time t (0..1) along its run at you */
+function fruitAt(el, t, now){
+  const ease  = Math.pow(t, 1.7);          /* perspective: slow far, fast near */
+  const wob   = Math.sin(now/620 + el._ph) * 9 * t;
+  const x = el._vx + (el._ex - el._vx) * ease + wob;
+  const y = el._vy + (el._ey - el._vy) * Math.pow(t, 1.9);
+  const s = 0.11 + Math.pow(t, 1.55) * 1.05;
+  return { x, y, s };
 }
 
 /* the seeds. Thrown wide and downward, because they have weight. */
@@ -1810,20 +1866,24 @@ function popFruit(el){
   el._dead = true;
   const c = CHARIOTS[S.chariot];
   const road = $("#road");
-  const cx = el._x + el.offsetWidth/2;
-  const cy = el._y + el.offsetHeight/2;
+  const p = fruitAt(el, el._t, performance.now());
+  const cx = p.x, cy = p.y;
   const scrolly = el._kind === "scroll";
 
-  /* the fruit opens along its seam, and the seeds go everywhere */
+  /* the fruit opens along its seam, and the seeds go everywhere.
+     Where the drawn pomegranate exists, swap in the split one. */
   el.classList.add("popped");
-  scatterSeeds(cx, cy, scrolly ? 14 : 10, scrolly ? "--brass" : "--pom");
-  setTimeout(() => el.remove(), 540);
+  el.querySelectorAll("img").forEach(im => {
+    im.src = "assets/pomegranate-split.png";
+  });
+  scatterSeeds(cx, cy, scrolly ? 16 : 12, scrolly ? "--brass" : "--pom");
+  setTimeout(() => el.remove(), 700);
   stir(scrolly ? 0.6 : 0.34);
 
   const b = document.createElement("div");
   b.className = "burst";
-  b.style.left = el._x + "px";
-  b.style.top  = el._y + "px";
+  b.style.left = cx + "px";
+  b.style.top  = cy + "px";
 
   if(scrolly){
     b.style.color = "var(--brass)";
@@ -1887,24 +1947,27 @@ function loop(now){
       S.scrollAt = 99999;
     }
 
-    const road = $("#road");
-    const W = road.clientWidth;
     $$("#road .fruit").forEach(el => {
-      el._x += el._vx * dt;
-      const wob = Math.sin((now/540) + el._ph) * el._amp;
-      el.style.transform = "translate(" + (el._x - parseFloat(el.style.left)) + "px," + wob + "px)";
-      if(el._x < -110){
+      if(el._dead) return;
+      el._t += dt / el._dur;
+      if(el._t >= 1){
         if(el._kind === "scroll"){
-          /* the scroll must not be lost — send it round again */
-          el._x = W + 90;
-          el.style.left = el._x + "px";
+          /* the scroll must not be lost — send it back down the road */
+          el._t = 0;
         } else {
           el.remove();
+          return;
         }
       }
+      const p = fruitAt(el, el._t, now);
+      el.style.transform =
+        "translate3d(" + (p.x - el._vx).toFixed(1) + "px," +
+                         (p.y - el._vy).toFixed(1) + "px,0) scale(" + p.s.toFixed(3) + ")";
+      /* the nearer it is, the more it sits in front */
+      el.style.zIndex = 4 + Math.round(el._t * 6);
     });
 
-    paintHUD();
+    paintHUD(); paintDolly();
 
     if(S.time <= 0){
       S.time = 0;
@@ -2057,7 +2120,7 @@ function settle(entry, right){
   on.addEventListener("click", () => {
     S.qIdx++;
     $$("#road .scroll-veil").forEach(e => e.remove());
-    paintHUD();
+    paintHUD(); paintDolly();
     if(S.qIdx >= Q_PER_LEG){ endLeg(true); return; }
     S.paused = false;
     S.lastTick = performance.now();
