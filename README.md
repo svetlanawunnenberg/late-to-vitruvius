@@ -3,7 +3,7 @@
 **A racing game about the vocabulary of classical architecture.**
 
 Vitruvius is teaching this morning and you are on the wrong side of Rome. Take a
-chariot, burst the fruit for time, and read every scroll the road throws at you —
+chariot, split pomegranates for time, and read every scroll the road throws at you —
 because he will not seat a student who has not studied.
 
 Three legs, eight scrolls each, seventy-odd terms drawn from *De architectura*
@@ -53,7 +53,6 @@ assets/chariot-biga.png        ~800×500   side view, facing right
 assets/chariot-quadriga.png    ~800×500
 assets/chariot-carpentum.png   ~800×500
 assets/pomegranate.png         ~256×256
-assets/fig.png                 ~256×256
 assets/scroll.png              ~1200×800
 assets/vitruvius.png           ~600×800
 assets/road.png                ~2400×600  tileable left-to-right

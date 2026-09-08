@@ -10,7 +10,6 @@ have not made yet keeps its hand-drawn version.
 | `chariot-quadriga.png` | Four-horse chariot | ~800×500 | Same view and same eye-level as the biga, so they sit together. |
 | `chariot-carpentum.png` | Covered two-wheeled cart | ~800×500 | Same again. |
 | `pomegranate.png` | One pomegranate | ~256×256 | Centred, a little margin all round. |
-| `fig.png` | One fig | ~256×256 | Same. Used for both the ordinary figs and the gilded scroll-figs. |
 | `scroll.png` | An open, unrolled, **blank** parchment | ~1200×800 | Text is drawn over it, so leave the middle empty. |
 | `vitruvius.png` | A figure or a bust | ~600×800 | For the arrival screen. |
 | `road.png` | Roman street backdrop — cypresses, an aqueduct, a wall | ~2400×600 | Must **tile left to right**: the right-hand edge has to meet the left-hand edge without a seam, because it scrolls in a loop. |

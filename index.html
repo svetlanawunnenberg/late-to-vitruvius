@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="A racing game about the vocabulary of classical architecture. Burst the fruit, read the scrolls, reach the lecture before Vitruvius begins.">
+<meta name="description" content="A racing game about the vocabulary of classical architecture. Split the pomegranates, read the scrolls, reach the lecture before Vitruvius begins.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#e4e2d6">
@@ -43,6 +43,15 @@
 
   --focus:      #a81f37;
 
+  /* the shadow layer. --vigour (0..1) is written from the game loop */
+  --vigour:      0;
+  --shade-ink:   #14120e;
+  --shade-min:   .10;
+  --shade-range: .30;
+  --shade-x:     4px;
+  --shade-y:     6px;
+  --shade-blur:  1.4px;
+
   --f-display: "Cormorant Garamond", "Palatino Linotype", Palatino, Georgia, serif;
   --f-body:    "EB Garamond", "Palatino Linotype", Palatino, Georgia, serif;
   --f-mono:    "IBM Plex Mono", "Consolas", "SF Mono", ui-monospace, monospace;
@@ -70,6 +79,11 @@
     --sky-lo:     #1a1d21;
     --ground:     #202227;
     --focus:      #e05266;
+    /* on a dark ground a cast shadow only reads if it is properly black */
+    --shade-ink:   #000000;
+    --shade-min:   .20;
+    --shade-range: .42;
+    --shade-blur:  1.8px;
   }
 }
 :root[data-theme="dark"]{
@@ -90,6 +104,10 @@
   --sky-lo:     #1a1d21;
   --ground:     #202227;
   --focus:      #e05266;
+  --shade-ink:   #000000;
+  --shade-min:   .20;
+  --shade-range: .42;
+  --shade-blur:  1.8px;
 }
 
 *{ box-sizing:border-box; }
@@ -425,6 +443,33 @@ h2.screen-h{
   animation:pan 3.1s linear infinite;
 }
 
+/* ============================================================
+   THE SHADOW LAYER
+   Every drawn piece is printed twice: a silhouette thrown beneath
+   it, and the piece itself over the top. --vigour is written from
+   the game loop, so the shadows deepen and lengthen as the run
+   gets livelier and settle back when it goes quiet. It reads as a
+   plate struck slightly out of register, which is the right kind
+   of wrong for an engraving.
+   ============================================================ */
+.piece{ position:relative; display:block; width:100%; height:100%; }
+.piece > *{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+.piece-shade{
+  opacity:calc(var(--shade-min) + var(--vigour) * var(--shade-range));
+  transform:translate(calc(var(--shade-x) * (0.55 + var(--vigour) * 0.7)),
+                      calc(var(--shade-y) * (0.55 + var(--vigour) * 0.7)));
+  filter:blur(var(--shade-blur));
+  pointer-events:none;
+  transition:opacity .22s ease-out, transform .22s ease-out;
+}
+.piece-shade svg{ color:var(--shade-ink) !important; }
+.piece-shade img{ filter:brightness(0) saturate(0); }
+.piece-art{ position:absolute; inset:0; }
+.piece-shade > *, .piece-art > *{
+  position:absolute; inset:0; width:100%; height:100%; display:block;
+}
+.piece img{ object-fit:contain; }
+
 .chariot{
   position:absolute;
   left:7%;
@@ -436,35 +481,68 @@ h2.screen-h{
   pointer-events:none;
   z-index:3;
 }
-.chariot svg, .chariot img{ position:absolute; inset:0; width:100%; height:100%; }
-.chariot img{ object-fit:contain; object-position:bottom left; }
+.chariot .piece img{ object-position:bottom left; }
 @keyframes bob{ 0%,100%{ transform:translateY(0);} 50%{ transform:translateY(-4px);} }
 
-/* fruit */
+/* ---------- pomegranates ---------- */
 .fruit{
   position:absolute;
-  width:56px; height:56px;
+  width:60px; height:60px;
   cursor:pointer;
   z-index:4;
   will-change:transform;
   touch-action:manipulation;
 }
-.fruit svg, .fruit img{ width:100%; height:100%; display:block; pointer-events:none; }
-.fruit img{ object-fit:contain; }
-.fruit.scrollfig{ width:78px; height:78px; }
-.fruit.scrollfig::after{
+.fruit .piece > *{ pointer-events:none; }
+.fruit.scrollfruit{ width:84px; height:84px; }
+.fruit.scrollfruit::after{
   content:"";
   position:absolute; inset:-11px;
   border:1px solid var(--brass);
   border-radius:50%;
   opacity:.5;
   animation:pulse 1.5s ease-in-out infinite;
+  pointer-events:none;
 }
 @keyframes pulse{ 0%,100%{ transform:scale(1); opacity:.5;} 50%{ transform:scale(1.13); opacity:.16;} }
 
-.burst{
+/* the pop: the fruit splits, the seeds go everywhere */
+.fruit.popped{ pointer-events:none; }
+.fruit.popped .piece{ animation:pop-swell .5s cubic-bezier(.2,.9,.3,1) forwards; }
+@keyframes pop-swell{
+  0%  { transform:scale(1);    opacity:1; }
+  22% { transform:scale(1.22); opacity:1; }
+  100%{ transform:scale(1.05); opacity:0; }
+}
+/* the drawn pomegranate opens along its seam */
+.fruit.popped .pom-half-l{ animation:half-l .5s cubic-bezier(.2,.9,.3,1) forwards; }
+.fruit.popped .pom-half-r{ animation:half-r .5s cubic-bezier(.2,.9,.3,1) forwards; }
+.fruit.popped .pom-body{ opacity:0; }
+@keyframes half-l{ to{ transform:translate(-13px,3px) rotate(-26deg); } }
+@keyframes half-r{ to{ transform:translate(13px,3px)  rotate(26deg);  } }
+
+.seeds{
   position:absolute;
   z-index:5;
+  pointer-events:none;
+  width:0; height:0;
+}
+.seeds i{
+  position:absolute;
+  width:6px; height:8px;
+  margin:-4px 0 0 -3px;
+  border-radius:60% 60% 55% 55%;
+  background:var(--pom);
+  animation:seed .62s cubic-bezier(.15,.85,.35,1) forwards;
+}
+@keyframes seed{
+  from{ transform:translate(0,0) scale(1);   opacity:.95; }
+  to  { transform:translate(var(--sx),var(--sy)) scale(.45); opacity:0; }
+}
+
+.burst{
+  position:absolute;
+  z-index:6;
   pointer-events:none;
   font-family:var(--f-mono);
   font-size:13px;
@@ -786,11 +864,90 @@ kbd{
 }
 .linky:hover{ color:var(--ink); border-bottom-color:var(--ink-soft); }
 
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:calc(20px + env(safe-area-inset-bottom));
+  transform:translate(-50%, 14px);
+  z-index:60;
+  max-width:min(420px, calc(100vw - 32px));
+  padding:11px 18px;
+  background:var(--ink);
+  color:var(--paper-lit);
+  font-family:var(--f-mono);
+  font-size:11px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  text-align:center;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .2s ease, transform .2s ease;
+}
+.toast.on{ opacity:1; transform:translate(-50%, 0); }
+
+/* ============================================================
+   PHONE AND LAPTOP
+   ============================================================ */
+
+/* the notch, the home bar, and the pull-to-refresh that would
+   otherwise reload the page mid-race */
+html{ overscroll-behavior-y:none; }
+.plate{
+  padding-left:max(clamp(10px,2.4vw,26px), env(safe-area-inset-left));
+  padding-right:max(clamp(10px,2.4vw,26px), env(safe-area-inset-right));
+  padding-bottom:max(clamp(10px,2.4vw,26px), env(safe-area-inset-bottom));
+  padding-top:max(clamp(10px,2.4vw,26px), env(safe-area-inset-top));
+}
+
+/* anything you touch is at least a finger wide */
+@media (pointer:coarse){
+  .btn{ padding:15px 26px; }
+  .btn-quiet{ padding:13px 18px; }
+  .seg button{ padding:13px 18px; }
+  .choice{ padding:16px 16px; }
+  .fruit{ width:74px; height:74px; }
+  .fruit.scrollfruit{ width:96px; height:96px; }
+  .linky{ padding:6px 0; }
+  /* hover styling is a lie on a touch screen */
+  .btn:hover{ background:transparent; color:var(--ink); }
+  .btn-primary:hover{ background:var(--pom); border-color:var(--pom); color:#fbf7f2; }
+  .choice:hover{ border-color:var(--rule); background:transparent; }
+}
+
+@media (max-width:720px){
+  .hud{ gap:10px 14px; font-size:10px; letter-spacing:.1em; }
+  .hud .stat b{ font-size:14px; }
+  .road{ min-height:200px; }
+  .btn-row{ gap:9px; }
+  .btn-row .btn{ flex:1 1 auto; min-width:44%; text-align:center; }
+}
+
 @media (max-width:560px){
   .entry{ grid-template-columns:1fr; gap:2px; }
   .entry .src{ grid-column:1; }
   .missed-item{ grid-template-columns:1fr; }
-  .clepsydra{ width:18px; }
+  .clepsydra{ width:18px; right:8px; }
+  .chariot{ width:clamp(104px,30vw,150px); height:clamp(74px,21vw,110px); left:5%; }
+  .scroll{ padding:16px 15px 18px; }
+  .scale-label{ font-size:9px; padding-left:10px; }
+  .plate-head{ font-size:9.5px; letter-spacing:.12em; }
+  .btn-row .btn{ min-width:100%; }
+}
+
+/* a phone held sideways has almost no height to spare */
+@media (max-height:460px) and (orientation:landscape){
+  .plate{ padding:4px; }
+  .plate-head, .plate-foot{ display:none; }
+  .road{ min-height:120px; }
+  .screen{ padding:12px 16px; gap:10px; }
+  .scroll{ max-height:calc(100svh - 24px); }
+}
+
+/* a real keyboard: give the answer field a proper home */
+@media (hover:hover) and (pointer:fine){
+  .answer-form input{ min-width:260px; }
+  .fruit{ cursor:pointer; }
 }
 
 @media (prefers-reduced-motion:reduce){
@@ -893,7 +1050,7 @@ kbd{
         <span></span><span></span><span></span><span></span>
       </div>
 
-      <p class="lede">Vitruvius is teaching this morning and you are on the wrong side of the city. Take a chariot, burst the fruit for time, and read every scroll the road throws at you &mdash; because <em>he will not seat a student who has not studied.</em></p>
+      <p class="lede">Vitruvius is teaching this morning and you are on the wrong side of the city. Take a chariot, split pomegranates for time, and read every scroll the road throws at you &mdash; because <em>he will not seat a student who has not studied.</em></p>
 
       <div class="btn-row">
         <button class="btn btn-primary" id="go-start">Harness the horses</button>
@@ -1004,8 +1161,8 @@ kbd{
         <h3>The game itself</h3>
         <ol>
           <li>Pick a chariot. Each is a different race, not a different colour.</li>
-          <li>Fruit crosses the road. <b>Click or tap</b> a pomegranate or fig to burst it &mdash; that buys you time on the water clock.</li>
-          <li>A glowing fig carries a scroll. Burst it and the scroll unrolls with a term.</li>
+          <li>Pomegranates cross the road. <b>Click or tap</b> one and it splits open, scattering its seeds &mdash; that buys you time on the water clock.</li>
+          <li>A gilded pomegranate carries a scroll. Open it and the scroll unrolls with a term.</li>
           <li>Answer it. Correct answers move you along the road; the road is measured in <b>modules</b>, eight to a leg.</li>
           <li>Three legs to the lecture. Arrive before the clock empties, and arrive having learned something.</li>
         </ol>
@@ -1027,9 +1184,14 @@ kbd{
           <li>Open the link. Click the fruit.</li>
           <li>To keep it: <kbd>Ctrl</kbd> <kbd>D</kbd> to bookmark.</li>
         </ul>
+        <h3>Sharing your run</h3>
+        <ul>
+          <li>At the door, <b>Share this run</b> hands your three scores to the phone's own share sheet &mdash; Messages, Instagram, wherever.</li>
+          <li>On a laptop the same button copies the run to the clipboard instead, ready to paste.</li>
+        </ul>
         <h3>iPhone &amp; iPad</h3>
         <ul>
-          <li>Open the link in Safari, then tap the fruit.</li>
+          <li>Open the link in Safari, then tap the pomegranates.</li>
           <li>To make it behave like an app: tap the <b>Share</b> button, then <b>Add to Home Screen</b>. It opens full screen with no browser bars.</li>
           <li>On a phone, <b>Tap the meaning</b> is the better answer mode &mdash; typing Latin against a clock on a small keyboard is no fun.</li>
           <li>An iPad with a keyboard is the best of both: use <b>Type the term</b>.</li>
@@ -1210,10 +1372,17 @@ const Q_PER_LEG = 8;
    2. DRAWN ART  (replaced by assets/*.png when those exist)
    ============================================================ */
 
-function art(svg, file, cls){
+/* Every piece is printed twice: a silhouette thrown beneath, and the
+   piece over it. The shadow is the same artwork struck in solid black
+   and offset, so it works whether the piece is a drawing or a PNG.
+   Its weight follows --vigour, which the game loop writes. */
+function art(svg, file){
   const src = "assets/" + file;
-  return svg + '<img class="' + (cls||"") + '" src="' + src +
-         '" alt="" onerror="this.remove()">';
+  const img = f => '<img src="' + f + '" alt="" onerror="this.remove()">';
+  return '<span class="piece">' +
+           '<span class="piece-shade" aria-hidden="true">' + svg + img(src) + '</span>' +
+           '<span class="piece-art">' + svg + img(src) + '</span>' +
+         '</span>';
 }
 
 const SVG_CHARIOT = {
@@ -1258,27 +1427,54 @@ const SVG_CHARIOT = {
   </svg>`
 };
 
-const SVG_POM = `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6"
-  stroke-linecap="round" stroke-linejoin="round" style="color:var(--pom)">
-  <circle cx="32" cy="37" r="20" fill="color-mix(in srgb, currentColor 22%, transparent)"/>
-  <path d="M32 17v-6M32 11l-6-5 6 1 1-6 3 6 6-1-4 5z"/>
-  <path d="M24 32q4 6 0 12M40 32q-4 6 0 12M32 30v22" opacity=".6"/>
-</svg>`;
+/* The pomegranate is drawn in three parts so it can be opened: a whole
+   body that hides on the pop, and two halves that swing apart from the
+   seam. The calyx crown stays with the right half, as it does on the fruit. */
+function pomegranate(tint){
+  return `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6"
+    stroke-linecap="round" stroke-linejoin="round" style="color:var(${tint})">
+    <g class="pom-body">
+      <circle cx="32" cy="37" r="20" fill="color-mix(in srgb, currentColor 22%, transparent)"/>
+      <path d="M32 17v-6M32 11l-6-5 6 1 1-6 3 6 6-1-4 5z"/>
+      <path d="M24 32q4 6 0 12M40 32q-4 6 0 12" opacity=".55"/>
+    </g>
+    <g class="pom-half-l" style="transform-origin:32px 37px">
+      <path d="M32 17v40a20 20 0 0 1 0-40z" fill="color-mix(in srgb, currentColor 26%, transparent)"/>
+      <path d="M24 32q4 6 0 12" opacity=".55"/>
+      <circle cx="24" cy="34" r="1.7" fill="currentColor" stroke="none" opacity=".75"/>
+      <circle cx="21" cy="41" r="1.7" fill="currentColor" stroke="none" opacity=".75"/>
+      <circle cx="26" cy="45" r="1.7" fill="currentColor" stroke="none" opacity=".75"/>
+    </g>
+    <g class="pom-half-r" style="transform-origin:32px 37px">
+      <path d="M32 17v40a20 20 0 0 0 0-40z" fill="color-mix(in srgb, currentColor 26%, transparent)"/>
+      <path d="M32 17v-6M32 11l-6-5 6 1 1-6 3 6 6-1-4 5z"/>
+      <path d="M40 32q-4 6 0 12" opacity=".55"/>
+      <circle cx="40" cy="34" r="1.7" fill="currentColor" stroke="none" opacity=".75"/>
+      <circle cx="43" cy="41" r="1.7" fill="currentColor" stroke="none" opacity=".75"/>
+      <circle cx="38" cy="45" r="1.7" fill="currentColor" stroke="none" opacity=".75"/>
+    </g>
+  </svg>`;
+}
 
-const SVG_FIG = `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6"
-  stroke-linecap="round" stroke-linejoin="round" style="color:var(--fig)">
-  <path d="M32 15q14 6 14 22 0 15-14 15T18 37q0-16 14-22z"
-        fill="color-mix(in srgb, currentColor 22%, transparent)"/>
-  <path d="M32 15q-2-6 3-9M35 8q6-2 9 2-5 4-9 1" opacity=".8"/>
-  <path d="M26 32q3 8 0 14M38 32q-3 8 0 14" opacity=".5"/>
-</svg>`;
+const SVG_POM = pomegranate("--pom");
 
-const SVG_SCROLLFIG = `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6"
+/* the gilded one, which carries a scroll */
+const SVG_SCROLLPOM = `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6"
   stroke-linecap="round" stroke-linejoin="round" style="color:var(--brass)">
-  <path d="M32 15q14 6 14 22 0 15-14 15T18 37q0-16 14-22z"
-        fill="color-mix(in srgb, currentColor 26%, transparent)"/>
-  <path d="M32 15q-2-6 3-9M35 8q6-2 9 2-5 4-9 1" opacity=".8"/>
-  <path d="M23 34h18M23 40h18M23 46h12" stroke-width="1.8"/>
+  <g class="pom-body">
+    <circle cx="32" cy="37" r="20" fill="color-mix(in srgb, currentColor 26%, transparent)"/>
+    <path d="M32 17v-6M32 11l-6-5 6 1 1-6 3 6 6-1-4 5z"/>
+    <path d="M23 32h18M23 38h18M23 44h12" stroke-width="1.8"/>
+  </g>
+  <g class="pom-half-l" style="transform-origin:32px 37px">
+    <path d="M32 17v40a20 20 0 0 1 0-40z" fill="color-mix(in srgb, currentColor 30%, transparent)"/>
+    <path d="M23 32h9M23 38h9M23 44h9" stroke-width="1.8"/>
+  </g>
+  <g class="pom-half-r" style="transform-origin:32px 37px">
+    <path d="M32 17v40a20 20 0 0 0 0-40z" fill="color-mix(in srgb, currentColor 30%, transparent)"/>
+    <path d="M32 17v-6M32 11l-6-5 6 1 1-6 3 6 6-1-4 5z"/>
+    <path d="M32 32h9M32 38h9M32 44h9" stroke-width="1.8"/>
+  </g>
 </svg>`;
 
 const SVG_SCENERY = `<svg viewBox="0 0 800 200" fill="none" stroke="currentColor" stroke-width="1.4"
@@ -1375,6 +1571,7 @@ const S = {
   correct: 0,
   answered: 0,
   fruitPopped: 0,
+  vigour: 0,
   missed: [],
   marks: [],
   running: false,
@@ -1410,6 +1607,8 @@ function show(which){
     $("#plate-no").innerHTML = "Plate &mdash; <b>" + heads[which] + "</b>";
   }
   $("#screen-"+which).scrollTop = 0;
+  /* off the road the shadows sit at a calm resting weight */
+  if(which !== "game"){ S.vigour = 0.42; paintVigour(); }
 }
 
 /* ============================================================
@@ -1433,7 +1632,7 @@ function buildChariots(){
       '<div class="spec">' +
         '<span>Clepsydra</span><b>' + c.time + 's</b>' +
         '<span>Per correct answer</span><b>+' + c.perCorrect + 's</b>' +
-        '<span>Fruit worth</span><b>&times;' + c.fruitMul.toFixed(1) + '</b>' +
+        '<span>Pomegranates worth</span><b>&times;' + c.fruitMul.toFixed(1) + '</b>' +
       '</div>';
     b.addEventListener("click", () => {
       S.chariot = key;
@@ -1466,16 +1665,15 @@ const TUT = [
                art(SVG_CHARIOT[S.chariot], "chariot-" + S.chariot + ".png") + '</div>'
   },
   {
-    h: TAP + " the fruit for time",
-    p: "The water clock is draining from the moment you set off. Pomegranates and figs cross the road as you pass the sellers &mdash; burst one and you buy a few more seconds. It is the only way to make time.",
+    h: TAP + " the pomegranates",
+    p: "The water clock is draining from the moment you set off. Pomegranates cross the road as you pass the sellers &mdash; " + TAP.toLowerCase() + " one and it splits open, the seeds scatter, and you buy a few more seconds. It is the only way to make time.",
     fig: () => '<div style="display:flex;gap:26px;align-items:center">' +
-               '<div style="width:74px">' + art(SVG_POM,"pomegranate.png") + '</div>' +
-               '<div style="width:74px">' + art(SVG_FIG,"fig.png") + '</div></div>'
+               '<div style="width:86px">' + art(SVG_POM,"pomegranate.png") + '</div></div>'
   },
   {
-    h: "A gilded fig carries a scroll",
-    p: "Burst it and the scroll unrolls with a term of the classical language on it. Answer correctly and the horses surge; answer wrongly and you lose ground &mdash; but the scroll always tells you what the answer was before it furls.",
-    fig: () => '<div style="width:82px;position:relative">' + art(SVG_SCROLLFIG,"fig.png") + '</div>'
+    h: "A gilded one carries a scroll",
+    p: "Open it and the scroll unrolls with a term of the classical language on it. Answer correctly and the horses surge; answer wrongly and you lose ground &mdash; but the scroll always tells you what the answer was before it furls.",
+    fig: () => '<div style="width:88px;position:relative">' + art(SVG_SCROLLPOM,"pomegranate.png") + '</div>'
   },
   {
     h: "The road is measured in modules",
@@ -1521,6 +1719,7 @@ function startLeg(){
   S.running = true;
   S.lastTick = performance.now();
   S.spawnAt = 0;
+  S.vigour = 0.30; paintVigour();
   S.scrollAt = 1400;
 
   $("#chariot-art").innerHTML = art(SVG_CHARIOT[S.chariot], "chariot-" + S.chariot + ".png");
@@ -1545,7 +1744,7 @@ function buildTicks(){
 }
 
 function clearRoad(){
-  $$("#road .fruit, #road .burst, #road .scroll-veil").forEach(e => e.remove());
+  $$("#road .fruit, #road .burst, #road .seeds, #road .scroll-veil").forEach(e => e.remove());
 }
 
 function paintHUD(){
@@ -1568,11 +1767,9 @@ function spawnFruit(scrolly){
   const W = road.clientWidth, H = road.clientHeight;
   if(!W) return;
   const el = document.createElement("div");
-  el.className = "fruit" + (scrolly ? " scrollfig" : "");
-  const isPom = !scrolly && Math.random() < 0.55;
-  el.innerHTML = scrolly ? art(SVG_SCROLLFIG,"fig.png")
-                         : (isPom ? art(SVG_POM,"pomegranate.png") : art(SVG_FIG,"fig.png"));
-  const size = scrolly ? 78 : 56;
+  el.className = "fruit" + (scrolly ? " scrollfruit" : "");
+  el.innerHTML = art(scrolly ? SVG_SCROLLPOM : SVG_POM, "pomegranate.png");
+  const size = scrolly ? 84 : 60;
   const topMin = H * 0.10, topMax = Math.max(topMin, H * 0.62);
   const y = topMin + Math.random() * (topMax - topMin);
   el.style.left = (W + size) + "px";
@@ -1582,9 +1779,30 @@ function spawnFruit(scrolly){
   el._vx = scrolly ? -(0.075 * (H>260?1:0.85)) : -(0.13 + Math.random()*0.07);
   el._amp = scrolly ? 5 : 9 + Math.random()*7;
   el._ph = Math.random()*6.28;
-  el._kind = scrolly ? "scroll" : (isPom ? "pom" : "fig");
+  el._kind = scrolly ? "scroll" : "pom";
   el.addEventListener("pointerdown", ev => { ev.preventDefault(); popFruit(el); });
   road.appendChild(el);
+}
+
+/* the seeds. Thrown wide and downward, because they have weight. */
+function scatterSeeds(x, y, count, tint){
+  const road = $("#road");
+  const s = document.createElement("div");
+  s.className = "seeds";
+  s.style.left = x + "px";
+  s.style.top  = y + "px";
+  let html = "";
+  for(let i=0;i<count;i++){
+    const a = (-140 + Math.random()*260) * Math.PI/180;
+    const d = 26 + Math.random()*40;
+    const sx = Math.cos(a) * d;
+    const sy = Math.sin(a) * d + 20 + Math.random()*18;
+    html += '<i style="--sx:' + sx.toFixed(1) + 'px;--sy:' + sy.toFixed(1) + 'px;' +
+            'background:var(' + tint + ');animation-delay:' + (Math.random()*70).toFixed(0) + 'ms"></i>';
+  }
+  s.innerHTML = html;
+  road.appendChild(s);
+  setTimeout(()=>s.remove(), 780);
 }
 
 function popFruit(el){
@@ -1592,31 +1810,53 @@ function popFruit(el){
   el._dead = true;
   const c = CHARIOTS[S.chariot];
   const road = $("#road");
+  const cx = el._x + el.offsetWidth/2;
+  const cy = el._y + el.offsetHeight/2;
+  const scrolly = el._kind === "scroll";
+
+  /* the fruit opens along its seam, and the seeds go everywhere */
+  el.classList.add("popped");
+  scatterSeeds(cx, cy, scrolly ? 14 : 10, scrolly ? "--brass" : "--pom");
+  setTimeout(() => el.remove(), 540);
+  stir(scrolly ? 0.6 : 0.34);
+
   const b = document.createElement("div");
   b.className = "burst";
   b.style.left = el._x + "px";
   b.style.top  = el._y + "px";
 
-  if(el._kind === "scroll"){
+  if(scrolly){
     b.style.color = "var(--brass)";
     b.textContent = "SCROLL";
-    el.remove(); road.appendChild(b);
+    road.appendChild(b);
     setTimeout(()=>b.remove(), 760);
-    openScroll();
+    /* let the fruit finish opening before the scroll covers the road */
+    setTimeout(openScroll, 260);
     return;
   }
 
-  const isPom = el._kind === "pom";
-  const secs = (isPom ? 2.4 : 1.4) * c.fruitMul;
-  const pts  = Math.round((isPom ? 20 : 34) * c.pts * Math.max(1, S.streak));
+  const secs = 2.4 * c.fruitMul;
+  const pts  = Math.round(26 * c.pts * Math.max(1, S.streak));
   S.time = Math.min(S.maxTime, S.time + secs);
   S.score += pts;
   S.fruitPopped++;
-  b.style.color = isPom ? "var(--pom)" : "var(--fig)";
+  b.style.color = "var(--pom)";
   b.textContent = "+" + secs.toFixed(1) + "s  +" + pts;
-  el.remove(); road.appendChild(b);
+  road.appendChild(b);
   setTimeout(()=>b.remove(), 760);
   paintHUD();
+}
+
+/* --- vigour: how lively the run feels right now, 0..1 ---
+   Everything you do stirs it; it settles on its own. The shadow layer
+   under every piece reads straight off it, so a good streak throws
+   longer, darker shadows and a quiet stretch lets them fade back. */
+function stir(amount){
+  S.vigour = Math.min(1, S.vigour + amount);
+  paintVigour();
+}
+function paintVigour(){
+  document.documentElement.style.setProperty("--vigour", S.vigour.toFixed(3));
 }
 
 /* --- loop --- */
@@ -1629,6 +1869,11 @@ function loop(now){
   if(!S.paused){
     S.time -= dt / 1000;
 
+    /* the road itself keeps a floor under the shadows; the rest decays */
+    const floor = 0.12 + Math.min(0.34, S.streak * 0.075);
+    S.vigour = Math.max(floor, S.vigour - (dt/1000) * 0.55);
+    paintVigour();
+
     S.spawnAt -= dt;
     if(S.spawnAt <= 0){
       spawnFruit(false);
@@ -1636,7 +1881,7 @@ function loop(now){
     }
 
     S.scrollAt -= dt;
-    const scrollOut = $$("#road .fruit.scrollfig").length;
+    const scrollOut = $$("#road .fruit.scrollfruit").length;
     if(S.scrollAt <= 0 && scrollOut === 0 && S.qIdx < Q_PER_LEG){
       spawnFruit(true);
       S.scrollAt = 99999;
@@ -1676,7 +1921,7 @@ function loop(now){
    ============================================================ */
 
 function openScroll(){
-  if(S.qIdx >= Q_PER_LEG) return;
+  if(!S.running || S.qIdx >= Q_PER_LEG) return;
   S.paused = true;
   S.retried = false;
   const entry = S.queue[S.qIdx];
@@ -1772,11 +2017,13 @@ function settle(entry, right){
     S.time = Math.min(S.maxTime, S.time + c.perCorrect);
     S.score += Math.round(120 * c.pts * Math.min(5, S.streak));
     S.marks[S.qIdx] = "done";
+    stir(0.55 + Math.min(0.45, S.streak * 0.12));
   } else {
     S.streak = 0;
     S.time = Math.max(0.6, S.time - 3);
     S.missed.push(entry);
     S.marks[S.qIdx] = "miss";
+    S.vigour = Math.min(S.vigour, 0.14); paintVigour();
   }
 
   const tick = $('#scale-track .scale-tick[data-i="' + S.qIdx + '"]');
@@ -1851,7 +2098,7 @@ function renderInterlude(){
     '<div class="spec" style="max-width:340px;border-top:1px solid var(--rule)">' +
       '<span>Scrolls read</span><b>' + S.correct + ' / ' + S.answered + '</b>' +
       '<span>Running accuracy</span><b>' + acc + '%</b>' +
-      '<span>Fruit burst</span><b>' + S.fruitPopped + '</b>' +
+      '<span>Pomegranates split</span><b>' + S.fruitPopped + '</b>' +
       '<span>Score</span><b>' + Math.round(S.score) + '</b>' +
     '</div>' +
     (S.missed.length ? missedBlock("What you have missed so far") : "") +
@@ -1915,7 +2162,7 @@ function renderArrival(arrived){
     '<div class="grade">' +
       bar("What you knew","Firmitas",firmitas, S.correct + " of " + total + " scrolls answered correctly.") +
       bar("How you travelled","Utilitas",utilitas, arrived ? "Arrived with " + Math.round(timeLeft) + "s in the clepsydra." : "Reached " + legsDone + " of " + LEGS.length + " legs.") +
-      bar("How well you did it","Venustas",venustas, "Longest streak " + S.bestStreak + "; " + S.fruitPopped + " fruit burst.") +
+      bar("How well you did it","Venustas",venustas, "Longest streak " + S.bestStreak + "; " + S.fruitPopped + " pomegranates split.") +
     '</div>' +
 
     '<div class="spec" style="max-width:340px;border-top:1px solid var(--rule)">' +
@@ -1926,7 +2173,8 @@ function renderArrival(arrived){
     (S.missed.length ? missedBlock("Read these before you come back") : "") +
 
     '<div class="btn-row">' +
-      '<button class="btn btn-primary" id="res-again">Run it again</button>' +
+      '<button class="btn btn-primary" id="res-share">' + SHARE_LABEL + '</button>' +
+      '<button class="btn btn-quiet" id="res-again">Run it again</button>' +
       '<button class="btn btn-quiet" id="res-yard">Change chariot</button>' +
       '<button class="btn btn-quiet" id="res-script">The Scriptorium</button>' +
     '</div></div>';
@@ -1935,6 +2183,85 @@ function renderArrival(arrived){
   $("#res-again").addEventListener("click", startRun);
   $("#res-yard").addEventListener("click", () => show("chariot"));
   $("#res-script").addEventListener("click", () => show("script"));
+  $("#res-share").addEventListener("click", () => shareRun({
+    arrived, admitted, firmitas, utilitas, venustas,
+    score: Math.round(S.score), chariot: CHARIOTS[S.chariot].name
+  }));
+}
+
+/* ============================================================
+   10b. SHARING A RUN
+   On a phone this opens the system share sheet, so the run can go
+   straight into Messages or a story. Everywhere else it copies.
+   ============================================================ */
+
+const CAN_SHARE = typeof navigator !== "undefined" && !!navigator.share;
+const SHARE_LABEL = CAN_SHARE ? "Share this run" : "Copy this run";
+
+function runCard(g){
+  const verdict = g.admitted ? "Vitruvius seated me."
+                : g.arrived  ? "He would not seat me."
+                             : "I never reached the hall.";
+  const bar = v => {
+    const n = Math.max(0, Math.min(10, Math.round(v/10)));
+    return "■".repeat(n) + "□".repeat(10-n);
+  };
+  return [
+    "LATE TO VITRUVIUS",
+    verdict,
+    "",
+    "FIRMITAS  " + bar(g.firmitas) + " " + g.firmitas,
+    "UTILITAS  " + bar(g.utilitas) + " " + g.utilitas,
+    "VENUSTAS  " + bar(g.venustas) + " " + g.venustas,
+    "",
+    g.score.toLocaleString() + " in the " + g.chariot + "."
+  ].join("\n");
+}
+
+function shareRun(g){
+  const text = runCard(g);
+  const url  = location.href.split("#")[0];
+  if(CAN_SHARE){
+    navigator.share({ title:"Late to Vitruvius", text:text + "\n", url })
+      .catch(() => {});
+    return;
+  }
+  const blob = text + "\n\n" + url;
+  const done = () => toast("Run copied &mdash; paste it anywhere");
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(blob).then(done, () => fallbackCopy(blob, done));
+  } else {
+    fallbackCopy(blob, done);
+  }
+}
+
+function fallbackCopy(text, done){
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.setAttribute("readonly","");
+  ta.style.cssText = "position:fixed;top:-1000px;opacity:0";
+  document.body.appendChild(ta);
+  ta.select();
+  let ok = false;
+  try{ ok = document.execCommand("copy"); }catch(e){}
+  ta.remove();
+  ok ? done() : toast("Could not copy &mdash; select the text by hand");
+}
+
+let toastTimer = 0;
+function toast(msg){
+  let t = $("#toast");
+  if(!t){
+    t = document.createElement("div");
+    t.id = "toast";
+    t.className = "toast";
+    t.setAttribute("role","status");
+    document.body.appendChild(t);
+  }
+  t.innerHTML = msg;
+  t.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove("on"), 2600);
 }
 
 /* ============================================================
