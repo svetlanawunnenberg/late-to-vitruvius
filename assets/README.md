@@ -72,19 +72,26 @@ CC BY-SA works too but obliges you to credit the performer in the README.
 
 Keep it under about 2 MB, and pick something that loops without an obvious seam.
 
-### Where the two current files stand
+### Where the three current files stand
 
-Both play locally. **Neither is committed** — `.gitignore` holds `assets/music-*.mp3`
-back until each recording's licence is confirmed, because this repository is public.
+All three play locally. **None is committed** — `.gitignore` holds
+`assets/music-*.mp3` back, because this repository is public and none of these
+recordings is cleared.
 
-| Slot | File | Length | State |
+| Slot | Work | File | Why it is held |
 |---|---|---|---|
-| 1 | Corelli, Christmas Concerto | 3:48, 320 kbps | **Blocked.** Filename says "From Master and Commander"; tags stripped. That is a commercial soundtrack recording. |
-| 2 | Bach, Brandenburg 3, third movement | 5:45, 128 kbps | **Unconfirmed.** Japanese-tagged, library-style filename. Free to *use* is not the same as free to *redistribute*. |
+| 1 | Corelli, Christmas Concerto, Op. 6 No. 8 | 8.7 MB · 3:48 · 320 kbps | Tags stripped, filename says "From Master and Commander". A commercial film soundtrack. |
+| 2 | Bach, Brandenburg 3, third movement | 5.3 MB · 5:45 · 128 kbps | Japanese-tagged, library-style filename. Free to *use* is not free to *redistribute*. |
+| 3 | Vivaldi, L'estro armonico, Op. 3 No. 10 | 14.6 MB · 10:34 · 192 kbps | Tagged **I Musici** — a famous commercial recording on Philips. Clearly not free. |
 
-To clear slot 1, replace it with a Musopen CC0 recording of the same work — the
-composition is identical, only the performance changes.
+None of this matters for playing the game yourself. It matters only for
+publishing, because publishing is redistribution.
 
-Also: 8.8 MB and 5.3 MB against about 4 MB for the whole rest of the game.
-320 kbps is far more than background music needs; 128 kbps mono would sound the
-same here and weigh a quarter as much.
+**The fix changes the performance, not a note of the music.** On
+[Musopen](https://musopen.org/), filter to **CC0**, find each work, download the
+MP3, and save it over the file of the same name. The game does not care which
+orchestra it is.
+
+Size is the second reason to replace them: **29 MB of audio against 4 MB for the
+whole rest of the game.** Choose a two-to-three minute movement rather than a
+ten-minute one, and 128 kbps is ample for something playing under hoofbeats.
