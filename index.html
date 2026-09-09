@@ -469,7 +469,6 @@ h2.screen-h{
   pointer-events:none;
   transition:opacity .22s ease-out, transform .22s ease-out;
 }
-.piece-shade svg{ color:var(--shade-ink) !important; }
 .piece-shade img{ filter:brightness(0) saturate(0); }
 .piece-art{ position:absolute; inset:0; }
 .piece-shade > *, .piece-art > *{
@@ -531,12 +530,6 @@ h2.screen-h{
   62% { transform:scale(1.18); opacity:1; }
   100%{ transform:scale(1.12); opacity:0; }
 }
-/* the drawn pomegranate opens along its seam */
-.fruit.popped .pom-half-l{ animation:half-l .5s cubic-bezier(.2,.9,.3,1) forwards; }
-.fruit.popped .pom-half-r{ animation:half-r .5s cubic-bezier(.2,.9,.3,1) forwards; }
-.fruit.popped .pom-body{ opacity:0; }
-@keyframes half-l{ to{ transform:translate(-13px,3px) rotate(-26deg); } }
-@keyframes half-r{ to{ transform:translate(13px,3px)  rotate(26deg);  } }
 
 .seeds{
   position:absolute;
@@ -1088,6 +1081,15 @@ html{ overscroll-behavior-y:none; }
     <div class="card-grid" id="chariot-grid"></div>
 
     <div>
+      <p class="eyebrow" style="margin-bottom:9px">How the scrolls are worded</p>
+      <div class="seg" role="group" aria-label="Wording">
+        <button id="reg-easy" aria-pressed="false">Plain</button>
+        <button id="reg-hard" aria-pressed="false">Exact</button>
+      </div>
+      <p class="lede" style="margin-top:9px;font-size:.94rem" id="reg-note"></p>
+    </div>
+
+    <div>
       <p class="eyebrow" style="margin-bottom:9px">How you answer the scrolls</p>
       <div class="seg" role="group" aria-label="Answer mode">
         <button id="mode-type" aria-pressed="false">Type the term</button>
@@ -1162,7 +1164,7 @@ html{ overscroll-behavior-y:none; }
       <p class="eyebrow">Every term in the game</p>
       <h2 class="screen-h">The Scriptorium</h2>
     </div>
-    <p class="lede">Definitions are kept short on purpose &mdash; this is a drill, not a dictionary. Terms marked <span style="color:var(--brass);font-family:var(--f-mono);font-size:10px;letter-spacing:.13em">VITRUVIUS</span> appear in <em>De architectura</em> itself; the rest are later codification, chiefly Renaissance.</p>
+    <p class="lede">Definitions are kept short on purpose &mdash; this is a drill, not a dictionary. They are shown in whichever wording you picked in the yard &mdash; <b>Plain</b> or <b>Exact</b>. Terms marked <span style="color:var(--brass);font-family:var(--f-mono);font-size:10px;letter-spacing:.13em">VITRUVIUS</span> appear in <em>De architectura</em> itself; the rest are later codification, chiefly Renaissance.</p>
     <div class="scriptorium" id="script-body"></div>
     <div class="btn-row"><button class="btn btn-quiet" id="script-back">Back</button></div>
   </section>
@@ -1185,6 +1187,11 @@ html{ overscroll-behavior-y:none; }
           <li>Answer it. Correct answers move you along the road; the road is measured in <b>modules</b>, eight to a leg.</li>
           <li>Three legs to the lecture. Arrive before the clock empties, and arrive having learned something.</li>
         </ol>
+        <h3>Plain or Exact</h3>
+        <ul>
+          <li>Set in the yard, before you start. <b>Plain</b> describes each term the way you would point at it on a building; <b>Exact</b> puts it the way a treatise does.</li>
+          <li>It changes nothing else. <b>The same eighty terms, the same eight scrolls a leg, the same clock.</b> Only the sentences around the term are different &mdash; on Exact they lean on the other terms of art, so you need the whole vocabulary to read the clue.</li>
+        </ul>
         <h3>Typing answers</h3>
         <ul>
           <li>Spelling is forgiving. Case, apostrophes, hyphens and accents are all ignored &mdash; <kbd>egg and dart</kbd> and <kbd>Egg-and-Dart</kbd> both pass.</li>
@@ -1234,98 +1241,105 @@ html{ overscroll-behavior-y:none; }
 
 /* ============================================================
    1. THE TERM BANK
+   Each entry is [ term, plain wording, exact wording, source ].
+
+   The vocabulary and the game are identical either way. Only the
+   phrasing changes. The plain wording describes the thing as you
+   would point at it on a building. The exact wording is the register
+   a treatise uses — terse, and leaning on other terms of art, so you
+   need the rest of the system to read it. That is what makes it hard.
+
    src: "V" = appears in Vitruvius, De architectura.
         "L" = later codification (Serlio, Vignola, Palladio,
               Scamozzi, Chambers) or standard usage.
-   Definitions are deliberately one sentence.
    ============================================================ */
 
 const TERMS = {
   forum: [
-    ["column","An upright structural member, generally round, made up of base, shaft and capital.","V"],
-    ["shaft","The long tapering body of a column, between its base and its capital.","V"],
-    ["capital","The crowning member at the head of a column, on which the entablature rests.","V"],
-    ["base","The moulded foot on which the shaft of a column stands.","V"],
-    ["entablature","The whole horizontal assembly carried by the columns: architrave, frieze and cornice together.","L"],
-    ["pediment","The low triangular gable that crowns a portico, a door or a window.","V"],
-    ["cornice","The projecting crowning member at the top of an entablature or a wall.","V"],
-    ["portico","A roofed porch carried on columns, forming the entrance front of a building.","V"],
-    ["colonnade","A row of columns carrying an entablature.","V"],
-    ["arch","A curved structure spanning an opening, which carries its load in compression.","L"],
-    ["keystone","The central wedge-shaped stone at the crown of an arch.","L"],
-    ["pilaster","A shallow rectangular column engaged with a wall, treated as though it were free-standing.","L"],
-    ["plinth","The plain square block at the foot of a column, pedestal or wall.","V"],
-    ["balustrade","A rail carried on a row of small moulded posts.","L"],
-    ["loggia","A gallery open on at least one side, usually arcaded or colonnaded.","L"],
-    ["rotunda","A circular building or room, generally domed.","L"],
-    ["cupola","A small dome crowning a roof, a turret or a larger dome.","L"],
-    ["quoin","One of the dressed stones forming the external corner of a wall.","L"],
-    ["niche","A recess in a wall, commonly arched, made to hold a statue or an urn.","L"],
-    ["attic","A low storey set above the main entablature of a building.","L"],
-    ["facade","The principal face of a building.","L"],
-    ["vault","A ceiling or roof built as a continuous arch in masonry.","V"]
+    ["column","An upright post that holds the building up, usually round.","A vertical support of circular plan, comprising base, shaft and capital, proportioned from its own lower diameter.","V"],
+    ["shaft","The long body of a column, between the foot and the head.","The body of the column between base and capital, diminished toward the summit.","V"],
+    ["capital","The decorated head of a column, where it meets what it carries.","The crowning member of the column, receiving the load of the architrave and determining the order.","V"],
+    ["base","The moulded foot a column stands on.","The moulded assembly of torus, scotia and fillets on which the shaft is seated.","V"],
+    ["entablature","Everything the columns carry: the whole horizontal band above them.","The horizontal assemblage borne by the columns, comprising architrave, frieze and cornice.","L"],
+    ["pediment","The low triangle over a porch, a door or a window.","The low-pitched gable terminating a portico or aperture, its field enclosed by raking and horizontal cornices.","V"],
+    ["cornice","The projecting shelf that finishes the top of a wall or an entablature.","The crowning projection of an entablature or wall, throwing water clear of the face below.","V"],
+    ["portico","A roofed porch on columns, forming the way in.","A columnar porch forming the principal approach, named by the count of its front columns.","V"],
+    ["colonnade","A line of columns carrying something across the top.","A range of columns carrying an entablature, spaced by a stated intercolumniation.","V"],
+    ["arch","A curved opening built of wedge-shaped stones.","A curved structure of voussoirs spanning a void, transmitting its load in compression to the abutments.","L"],
+    ["keystone","The stone at the very top of an arch, in the middle.","The central voussoir at the crown of an arch, last set and locking the ring.","L"],
+    ["pilaster","A flattened column standing against a wall.","A rectangular member engaged with the wall, carrying the base, shaft and capital of its order in low relief.","L"],
+    ["plinth","The plain square block at the very bottom.","The square member forming the lowest division of a base or pedestal.","V"],
+    ["balustrade","A rail held up by a row of little turned posts.","A rail supported on a series of moulded balusters, with base and coping.","L"],
+    ["loggia","A room or gallery open on one side to the air.","A gallery open on one or more sides, arcaded or colonnaded, within the mass of the building.","L"],
+    ["rotunda","A round room or round building, usually with a dome.","A building or apartment circular in plan, generally surmounted by a dome.","L"],
+    ["cupola","A little dome sitting on a roof.","A small vaulted crown to a roof, turret or larger dome, often lantern-lit.","L"],
+    ["quoin","The cut stones that make the corner of a wall stand out.","The dressed stones forming the external angle of a wall, laid in alternating courses.","L"],
+    ["niche","A hollow set into a wall, often with a curved top, for a statue.","A recess in the thickness of a wall, semicircular or rectangular in plan, commonly arched or shell-headed.","L"],
+    ["attic","A low storey sitting above the main order.","A storey of subordinate height raised above the principal entablature.","L"],
+    ["facade","The main face of a building, the one you look at.","The principal elevation, governed by the order and the disposition of its bays.","L"],
+    ["vault","A ceiling built as a continuous arch of stone or brick.","A covering formed as a continuous arched surface in masonry, thrusting on its abutments.","V"]
   ],
   via: [
-    ["architrave","The lowest member of an entablature: the beam spanning from column to column.","V"],
-    ["frieze","The middle division of an entablature, between architrave and cornice, plain or sculptured.","V"],
-    ["triglyph","The block of three vertical channels that punctuates a Doric frieze.","V"],
-    ["metope","The square panel set between two triglyphs in a Doric frieze.","V"],
-    ["guttae","The small conical drops hung beneath the triglyph and the mutule of the Doric order.","V"],
-    ["mutule","The flat inclined block on the soffit of the Doric cornice, set over each triglyph.","V"],
-    ["echinus","The convex cushion moulding beneath the abacus of a Doric or Ionic capital.","V"],
-    ["abacus","The flat slab forming the topmost member of a capital.","V"],
-    ["volute","The spiral scroll of the Ionic capital.","V"],
-    ["entasis","The slight convex swelling given to a column shaft, to correct the eye.","V"],
-    ["dentil","One of a band of small rectangular blocks, set like teeth, in a cornice.","V"],
-    ["modillion","A small scrolled bracket supporting the corona of a Corinthian or Composite cornice.","L"],
-    ["cyma recta","A double curve, concave above and convex below, generally used as a crowning moulding.","L"],
-    ["cyma reversa","A double curve, convex above and concave below; the ogee.","L"],
-    ["ovolo","A convex moulding, a quarter of a circle in section.","L"],
-    ["cavetto","A concave moulding, a quarter of a circle in section.","L"],
-    ["scotia","A deep concave moulding, chiefly used in a column base, which casts a strong shadow.","V"],
-    ["torus","A large convex moulding, semicircular in section, chiefly used in a column base.","V"],
-    ["astragal","A small convex moulding, semicircular in section; a bead.","V"],
-    ["fillet","A narrow flat band used to separate two mouldings.","L"],
-    ["corona","The broad flat projecting member of a cornice, above the bed mouldings, which throws the water clear of the wall.","V"],
-    ["soffit","The underside of any architectural member.","L"],
-    ["fluting","The shallow vertical channels cut in the shaft of a column.","V"],
-    ["acanthus","The deeply cut leaf carved on the Corinthian capital.","V"],
-    ["stylobate","The top step of the platform on which a colonnade stands.","V"],
-    ["tympanum","The triangular field enclosed by the mouldings of a pediment.","V"],
-    ["acroterion","An ornament set on the apex or the lower angles of a pediment.","V"],
-    ["egg and dart","An ovolo enriched with alternating oval and pointed forms.","L"],
-    ["dado","The plain body of a pedestal, between its base and its cap.","L"],
-    ["console","A bracket in the form of a vertical scroll, deeper than it is wide.","L"]
+    ["architrave","The beam that goes straight across from column to column.","The lowest division of the entablature, spanning from column to column, generally wrought in fasciae.","V"],
+    ["frieze","The flat band between the beam and the shelf above it.","The middle division of the entablature, between architrave and cornice, plain, pulvinated or sculptured.","V"],
+    ["triglyph","The block with three grooves, repeated along a Doric band.","The member of three vertical glyphs punctuating the Doric frieze, set over column and intercolumniation alike.","V"],
+    ["metope","The square panel between two grooved blocks.","The interval between triglyphs in the Doric frieze, square in proportion, plain or figured.","V"],
+    ["guttae","The little cones hanging underneath, like drops.","The frusta pendent beneath the regula of the taenia and beneath the mutule of the Doric cornice.","V"],
+    ["mutule","The sloping flat block on the underside of a Doric cornice.","The inclined block on the soffit of the Doric corona, set over each triglyph and charged with guttae.","V"],
+    ["echinus","The cushion that bulges out under the top slab of a capital.","The convex member beneath the abacus of the Doric or Ionic capital, an ovolo in section.","V"],
+    ["abacus","The flat square slab right at the top of a capital.","The uppermost division of the capital, square in plan, on which the architrave bears.","V"],
+    ["volute","The spiral scroll on the corners of an Ionic capital.","The spiral member of the Ionic capital, generated from an eye by a rule of diminishing radii.","V"],
+    ["entasis","The slight bulge in a column, so it does not look pinched.","The convex diminution of the shaft, correcting the concavity the eye would otherwise supply.","V"],
+    ["dentil","One of a row of small square blocks like teeth.","One of a range of small rectangular blocks in the bed mouldings of the Ionic or Corinthian cornice.","V"],
+    ["modillion","A small scrolled bracket under the cornice.","The scrolled console supporting the corona of the Corinthian or Composite cornice, spaced by the module.","L"],
+    ["cyma recta","A double curve, hollow at the top and bulging at the bottom.","A moulding of contrary flexure, concave above and convex below, crowning the cornice as the cymatium.","L"],
+    ["cyma reversa","A double curve the other way up: bulging on top, hollow beneath.","A moulding of contrary flexure, convex above and concave below; the ogee.","L"],
+    ["ovolo","A moulding that bulges out in a quarter circle.","A convex moulding, a quadrant of a circle in section, commonly enriched with egg and dart.","L"],
+    ["cavetto","A moulding hollowed out in a quarter circle.","A concave moulding, a quadrant of a circle in section, used chiefly in the cornice.","L"],
+    ["scotia","A deep hollow that throws a strong shadow, low on a column.","A deep concave moulding of two arcs between the tori of the base, contrived to hold a shadow.","V"],
+    ["torus","A big fat rounded moulding at the foot of a column.","A large convex moulding, semicircular in section, forming a principal member of the base.","V"],
+    ["astragal","A small bead, half-round, often at the neck of a column.","A small convex moulding, semicircular in section, generally enriched with bead and reel.","V"],
+    ["fillet","A plain flat strip separating two other mouldings.","A narrow band of rectangular section, separating and defining the profiles adjoining it.","L"],
+    ["corona","The wide flat overhang of a cornice that keeps the rain off.","The broad vertical-faced member of the cornice, above the bed mouldings, whose soffit is dripped to throw the water clear.","V"],
+    ["soffit","The underside of anything.","The exposed underside of any member, arch, corona or lintel.","L"],
+    ["fluting","The vertical grooves cut down a column.","The vertical channels wrought in the shaft, separated by arrises in the Doric and by fillets in the other orders.","V"],
+    ["acanthus","The carved leaf on a Corinthian capital.","The deeply lobed and serrated leaf of the Corinthian capital, disposed in two ranks about the bell.","V"],
+    ["stylobate","The top step the columns stand on.","The uppermost course of the crepidoma, forming the continuous platform on which the colonnade is set.","V"],
+    ["tympanum","The flat triangle inside a pediment.","The recessed field of the pediment, enclosed by the raking and horizontal cornices.","V"],
+    ["acroterion","An ornament perched on the point or corners of a pediment.","The pedestal and its ornament set at the apex and lower angles of the pediment.","V"],
+    ["egg and dart","A carved band of alternating eggs and pointed shapes.","The enrichment of the ovolo, alternating ovoid and anchor forms.","L"],
+    ["dado","The plain middle block of a pedestal.","The die of the pedestal, between its base mouldings and its cap.","L"],
+    ["console","A bracket shaped like a standing scroll.","A bracket in the form of a vertical scroll, of greater projection than breadth, commonly with unequal volutes.","L"]
   ],
   basilica: [
-    ["pycnostyle","An intercolumniation of one and a half diameters &mdash; the closest of the five spacings.","V"],
-    ["systyle","An intercolumniation of two diameters.","V"],
-    ["eustyle","An intercolumniation of two and a quarter diameters, which Vitruvius holds to be the best.","V"],
-    ["diastyle","An intercolumniation of three diameters.","V"],
-    ["araeostyle","An intercolumniation of four diameters or more &mdash; too wide for a stone architrave to bear.","V"],
-    ["hypaethral","Open to the sky; a temple with no roof over its central space.","V"],
-    ["peripteral","Having a single row of columns all round the cella.","V"],
-    ["dipteral","Having a double row of columns all round the cella.","V"],
-    ["pseudodipteral","Laid out as a dipteral temple, but with the inner row of columns left out.","V"],
-    ["prostyle","Having a portico of columns across the front only.","V"],
-    ["amphiprostyle","Having porticoes of columns at both front and rear, but none along the flanks.","V"],
-    ["in antis","With the columns set between the projecting side walls of the cella.","V"],
-    ["cella","The enclosed body of a temple, which houses the image of the god.","V"],
-    ["pronaos","The vestibule before the cella, formed by the projecting side walls and the columns between them.","V"],
-    ["module","The unit of measure &mdash; generally the lower semi-diameter of the column &mdash; by which the parts of an order are proportioned.","V"],
-    ["ordinatio","The giving of due measure to the parts of a work severally, and their agreement with the whole.","V"],
-    ["dispositio","The apt placing of things, and the elegant effect of the work in its arrangement.","V"],
-    ["eurythmia","Beauty and fitness in the adjustment of the members; graceful proportion.","V"],
-    ["symmetria","A proper agreement between the members of the work, and a relation of each part to the whole.","V"],
-    ["decor","The faultless correctness of a work composed of approved details; propriety.","V"],
-    ["distributio","The proper management of materials and site, and a thrifty balance of the cost.","V"],
-    ["composite","The fifth order &mdash; Ionic volutes over Corinthian leaves &mdash; codified in the Renaissance and NOT described by Vitruvius.","L"],
-    ["tuscan","The plainest of the orders, unfluted and without ornament, which Vitruvius describes as the Etruscan manner.","V"],
-    ["hermogenes","The Hellenistic architect whom Vitruvius credits with perfecting the eustyle arrangement.","V"],
-    ["de architectura","The treatise in ten books, written for Augustus, which is the only complete work on architecture to survive from antiquity.","V"],
-    ["firmitas","Soundness &mdash; the first of the three qualities Vitruvius demands of every building.","V"],
-    ["utilitas","Usefulness &mdash; the second of the three qualities Vitruvius demands of every building.","V"],
-    ["venustas","Beauty &mdash; the third of the three qualities Vitruvius demands of every building.","V"]
+    ["pycnostyle","Columns set very close together.","An intercolumniation of one and a half diameters, the closest of the five spacings.","V"],
+    ["systyle","Columns set fairly close together.","An intercolumniation of two diameters.","V"],
+    ["eustyle","The spacing Vitruvius says is best of all.","An intercolumniation of two and a quarter diameters, with the centre bay widened, which Vitruvius holds the most approved.","V"],
+    ["diastyle","Columns set well apart.","An intercolumniation of three diameters.","V"],
+    ["araeostyle","Columns so far apart that stone would break, so you use timber.","An intercolumniation of four diameters or more, exceeding the bearing of a stone architrave.","V"],
+    ["hypaethral","Open to the sky in the middle, with no roof over it.","A temple whose central space is unroofed and open to the heavens.","V"],
+    ["peripteral","With one ring of columns all the way round.","Having a single range of columns encompassing the cella on all four sides.","V"],
+    ["dipteral","With two rings of columns all the way round.","Having a double range of columns encompassing the cella on all four sides.","V"],
+    ["pseudodipteral","Laid out for two rings of columns, but the inner one left out.","Disposed as dipteral, the inner range omitted, leaving a portico two intercolumniations deep.","V"],
+    ["prostyle","Columns across the front only.","Having a portico of columns before the front alone, and none upon the flanks or rear.","V"],
+    ["amphiprostyle","Columns across the front and the back, but not the sides.","Having porticoes of columns before front and rear alike, the flanks left plain.","V"],
+    ["in antis","Columns tucked between the two projecting side walls.","Having the columns set between the antae terminating the projecting walls of the cella.","V"],
+    ["cella","The closed room in the middle of a temple, where the god stands.","The enclosed body of the temple, containing the image, entered through the pronaos.","V"],
+    ["pronaos","The porch you pass through before the inner room.","The vestibule before the cella, formed by the antae and the columns standing between them.","V"],
+    ["module","The unit everything is measured in: half the width of the column at the bottom.","The measure by which the members of an order are proportioned, generally the lower semi-diameter, subdivided into minutes.","V"],
+    ["ordinatio","Giving every part its right size, and making them agree with the whole.","The due measure of the members severally, and the agreement of the proportions of the whole work.","V"],
+    ["dispositio","Putting things in the right place, and the elegance that comes of it.","The apt placing of things, and the elegant effect of the work in its arrangement, shown in plan, elevation and perspective.","V"],
+    ["eurythmia","Proportions that simply look right together.","Beauty and fitness in the adjustment of the members, the parts answering one another in height, breadth and length.","V"],
+    ["symmetria","Every part agreeing with every other, and with the whole.","A proper agreement between the members of the work, and the relation of the several parts to the whole, reckoned from a standard part.","V"],
+    ["decor","Building in the manner the thing deserves, without a false note.","The faultless correctness of a work composed of approved details, according to usage, nature and prescription.","V"],
+    ["distributio","Using the site and the money sensibly.","The proper management of materials and site, and the thrifty balancing of cost against common sense.","V"],
+    ["composite","The fifth order, mixing Ionic scrolls with Corinthian leaves — and Vitruvius never mentions it.","The order combining the Ionic volute with the Corinthian bell, codified in the Renaissance and absent from De architectura.","L"],
+    ["tuscan","The plainest order: no fluting, no ornament.","The simplest order, unfluted and unenriched, which Vitruvius describes as the Etruscan manner.","V"],
+    ["hermogenes","The architect Vitruvius credits with perfecting the best column spacing.","The Hellenistic architect to whom Vitruvius attributes the perfecting of the eustyle and the pseudodipteral.","V"],
+    ["de architectura","Vitruvius's book, in ten parts, and the only one of its kind to survive from antiquity.","The treatise in ten books addressed to Augustus, the sole complete work on architecture surviving from antiquity.","V"],
+    ["firmitas","Soundness. The first of the three things every building owes you.","Soundness: the first of the triad Vitruvius requires, that the work stand and endure.","V"],
+    ["utilitas","Usefulness. The second of the three.","Convenience: the second of the triad, that the arrangement serve its use without fault.","V"],
+    ["venustas","Beauty. The third of the three.","Beauty: the third of the triad, that the aspect please and the proportions answer.","V"]
   ]
 };
 
@@ -1399,125 +1413,19 @@ const Q_PER_LEG = 8;
    ============================================================ */
 
 /* Every piece is printed twice: a silhouette thrown beneath, and the
-   piece over it. The shadow is the same artwork struck in solid black
-   and offset, so it works whether the piece is a drawing or a PNG.
-   Its weight follows --vigour, which the game loop writes. */
-function art(svg, file){
+   piece over it. The shadow is the same drawing struck in solid black
+   and offset; its weight follows --vigour, which the game loop writes.
+   Artwork only — the drawings are transparent, so any line art behind
+   them showed straight through. */
+function art(file){
   const src = "assets/" + file;
-  const img = f => '<img src="' + f + '" alt="" onerror="this.remove()">';
+  const img = '<img src="' + src + '" alt="">';
   return '<span class="piece">' +
-           '<span class="piece-shade" aria-hidden="true">' + svg + img(src) + '</span>' +
-           '<span class="piece-art">' + svg + img(src) + '</span>' +
+           '<span class="piece-shade" aria-hidden="true">' + img + '</span>' +
+           '<span class="piece-art">' + img + '</span>' +
          '</span>';
 }
 
-const SVG_CHARIOT = {
-  biga: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.5"
-    stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="xMinYMax meet">
-    <circle cx="52" cy="108" r="21"/><circle cx="52" cy="108" r="4"/>
-    <path d="M52 87v42M31 108h42M37 93l30 30M67 93l-30 30"/>
-    <path d="M30 96h44l-5 -26h-34z"/><path d="M30 82h44"/>
-    <path d="M74 88 L120 96"/>
-    <path d="M118 96q10-30 30-30 14 0 20 10l16 4 8-8 6 10-10 6-4 16-6-2-4 14-8-2 3-14"/>
-    <path d="M138 78q6 22 2 44M164 84q4 20 0 38"/>
-    <path d="M150 66q-4-12 2-18"/>
-    <path d="M150 62l-6-8 8 2 4-8 3 9 8-2z" opacity=".55"/>
-    <path d="M62 74q4-14 14-16" opacity=".8"/>
-  </svg>`,
-  quadriga: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.5"
-    stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="xMinYMax meet">
-    <circle cx="48" cy="106" r="23"/><circle cx="48" cy="106" r="4"/>
-    <path d="M48 83v46M25 106h46M32 90l32 32M64 90l-32 32"/>
-    <path d="M24 94h50l-6 -30h-38z"/><path d="M24 78h50"/>
-    <path d="M74 86 L116 94"/>
-    <path d="M114 94q10-32 32-32 15 0 21 11l18 4 9-9 6 11-11 6-4 18-7-2-4 15-8-2 3-15"/>
-    <path d="M136 74q7 24 2 48M164 80q5 22 0 42"/>
-    <path d="M120 100q10-26 30-26 13 0 19 9" opacity=".55"/>
-    <path d="M126 106q9-22 27-22" opacity=".35"/>
-    <path d="M148 62q-4-13 2-19"/>
-    <path d="M148 58l-6-9 8 3 4-9 4 10 8-3z" opacity=".55"/>
-  </svg>`,
-  carpentum: `<svg viewBox="0 0 240 140" fill="none" stroke="currentColor" stroke-width="1.5"
-    stroke-linecap="round" stroke-linejoin="round" preserveAspectRatio="xMinYMax meet">
-    <circle cx="44" cy="110" r="18"/><circle cx="44" cy="110" r="3.5"/>
-    <circle cx="92" cy="110" r="18"/><circle cx="92" cy="110" r="3.5"/>
-    <path d="M26 96h84v-6H26z"/>
-    <path d="M28 90V64q0-14 26-14h32q26 0 26 14v26"/>
-    <path d="M28 64q26-10 84 0"/>
-    <path d="M46 90V56M68 90V52M90 90V56" opacity=".5"/>
-    <path d="M112 84 L146 92"/>
-    <path d="M144 92q9-28 28-28 13 0 18 10l15 3 8-8 5 10-9 5-4 15-6-2-3 13-7-2 3-13"/>
-    <path d="M162 76q6 20 2 40M186 82q4 18 0 34"/>
-    <path d="M174 64q-4-11 2-17"/>
-    <path d="M20 74h8M20 80h8" opacity=".5"/>
-  </svg>`
-};
-
-/* The pomegranate is drawn in three parts so it can be opened: a whole
-   body that hides on the pop, and two halves that swing apart from the
-   seam. The calyx crown stays with the right half, as it does on the fruit. */
-function pomegranate(tint){
-  return `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6"
-    stroke-linecap="round" stroke-linejoin="round" style="color:var(${tint})">
-    <g class="pom-body">
-      <circle cx="32" cy="37" r="20" fill="color-mix(in srgb, currentColor 22%, transparent)"/>
-      <path d="M32 17v-6M32 11l-6-5 6 1 1-6 3 6 6-1-4 5z"/>
-      <path d="M24 32q4 6 0 12M40 32q-4 6 0 12" opacity=".55"/>
-    </g>
-    <g class="pom-half-l" style="transform-origin:32px 37px">
-      <path d="M32 17v40a20 20 0 0 1 0-40z" fill="color-mix(in srgb, currentColor 26%, transparent)"/>
-      <path d="M24 32q4 6 0 12" opacity=".55"/>
-      <circle cx="24" cy="34" r="1.7" fill="currentColor" stroke="none" opacity=".75"/>
-      <circle cx="21" cy="41" r="1.7" fill="currentColor" stroke="none" opacity=".75"/>
-      <circle cx="26" cy="45" r="1.7" fill="currentColor" stroke="none" opacity=".75"/>
-    </g>
-    <g class="pom-half-r" style="transform-origin:32px 37px">
-      <path d="M32 17v40a20 20 0 0 0 0-40z" fill="color-mix(in srgb, currentColor 26%, transparent)"/>
-      <path d="M32 17v-6M32 11l-6-5 6 1 1-6 3 6 6-1-4 5z"/>
-      <path d="M40 32q-4 6 0 12" opacity=".55"/>
-      <circle cx="40" cy="34" r="1.7" fill="currentColor" stroke="none" opacity=".75"/>
-      <circle cx="43" cy="41" r="1.7" fill="currentColor" stroke="none" opacity=".75"/>
-      <circle cx="38" cy="45" r="1.7" fill="currentColor" stroke="none" opacity=".75"/>
-    </g>
-  </svg>`;
-}
-
-const SVG_POM = pomegranate("--pom");
-
-/* the gilded one, which carries a scroll */
-const SVG_SCROLLPOM = `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6"
-  stroke-linecap="round" stroke-linejoin="round" style="color:var(--brass)">
-  <g class="pom-body">
-    <circle cx="32" cy="37" r="20" fill="color-mix(in srgb, currentColor 26%, transparent)"/>
-    <path d="M32 17v-6M32 11l-6-5 6 1 1-6 3 6 6-1-4 5z"/>
-    <path d="M23 32h18M23 38h18M23 44h12" stroke-width="1.8"/>
-  </g>
-  <g class="pom-half-l" style="transform-origin:32px 37px">
-    <path d="M32 17v40a20 20 0 0 1 0-40z" fill="color-mix(in srgb, currentColor 30%, transparent)"/>
-    <path d="M23 32h9M23 38h9M23 44h9" stroke-width="1.8"/>
-  </g>
-  <g class="pom-half-r" style="transform-origin:32px 37px">
-    <path d="M32 17v40a20 20 0 0 0 0-40z" fill="color-mix(in srgb, currentColor 30%, transparent)"/>
-    <path d="M32 17v-6M32 11l-6-5 6 1 1-6 3 6 6-1-4 5z"/>
-    <path d="M32 32h9M32 38h9M32 44h9" stroke-width="1.8"/>
-  </g>
-</svg>`;
-
-const SVG_SCENERY = `<svg viewBox="0 0 800 200" fill="none" stroke="currentColor" stroke-width="1.4"
-  preserveAspectRatio="none">
-  <path d="M0 190h800"/>
-  <path d="M20 190v-52q0-16 12-16t12 16v52" />
-  <path d="M60 190V96h180v94M60 118h180M60 96l90-26 90 26"/>
-  <path d="M96 190v-46h24v46M148 190v-46h24v46M200 190v-46h24v46"/>
-  <path d="M270 190v-64q0-20 14-20t14 20v64"/>
-  <path d="M320 190V80m0 0h150v110M320 110h150M320 80l75-22 75 22"/>
-  <path d="M352 190v-40h22v40M406 190v-40h22v40"/>
-  <path d="M500 190v-70q0-18 13-18t13 18v70"/>
-  <path d="M548 190v-56h30v56M548 134q15-16 30 0M590 190v-56h30v56M590 134q15-16 30 0M632 190v-56h30v56M632 134q15-16 30 0"/>
-  <path d="M540 124h140v-10H540z"/>
-  <path d="M700 190v-58q0-17 12-17t12 17v58"/>
-  <path d="M744 190v-40h40v40M744 150l20-14 20 14"/>
-</svg>`;
 
 /* ============================================================
    3. HELPERS
@@ -1583,8 +1491,15 @@ const isTouch = window.matchMedia("(hover: none)").matches ||
    4. STATE
    ============================================================ */
 
+/* Which register a term is put in. The vocabulary and the game are the
+   same either way — only the words around the term change. */
+function wording(entry){
+  return S.register === "hard" ? entry[2] : entry[1];
+}
+
 const S = {
   chariot: "quadriga",
+  register: "easy",
   mode: isTouch ? "tap" : "type",
   legIdx: 0,
   qIdx: 0,
@@ -1651,7 +1566,7 @@ function buildChariots(){
     b.setAttribute("aria-pressed", String(key === S.chariot));
     b.dataset.key = key;
     b.innerHTML =
-      '<div class="art">' + art(SVG_CHARIOT[key], "chariot-" + key + ".png") + '</div>' +
+      '<div class="art">' + art("chariot-" + key + ".png") + '</div>' +
       '<div><div class="chariot-name">' + c.name + '</div>' +
       '<div class="chariot-gloss">' + c.gloss + '</div></div>' +
       '<p>' + c.blurb + '</p>' +
@@ -1674,6 +1589,12 @@ function paintMode(){
   $("#mode-note").innerHTML = S.mode === "type"
     ? "The scroll gives you a definition and you type the term. Spelling is forgiving &mdash; case, apostrophes, hyphens and accents are all ignored. Best with a keyboard."
     : "The scroll gives you a term and you tap the right meaning from three. Best on a phone.";
+
+  $("#reg-easy").setAttribute("aria-pressed", String(S.register === "easy"));
+  $("#reg-hard").setAttribute("aria-pressed", String(S.register === "hard"));
+  $("#reg-note").innerHTML = S.register === "easy"
+    ? "Every term is described the way you would point at it on a building. Same words to learn, plainer sentences around them."
+    : "Every term is put the way a treatise puts it &mdash; terse, and leaning on the other terms of art. The vocabulary is identical; reading the clue is the harder part.";
 }
 
 /* ============================================================
@@ -1688,18 +1609,18 @@ const TUT = [
     h: "You are late",
     p: "Vitruvius is teaching this morning and you are on the wrong side of Rome. Three legs of road lie between you and the lecture hall, and he will not seat a student who has not read.",
     fig: () => '<div style="width:78%;height:78%;position:relative">' +
-               art(SVG_CHARIOT[S.chariot], "chariot-" + S.chariot + ".png") + '</div>'
+               art("chariot-" + S.chariot + ".png") + '</div>'
   },
   {
     h: TAP + " the pomegranates",
     p: "The water clock is draining from the moment you set off. Pomegranates cross the road as you pass the sellers &mdash; " + TAP.toLowerCase() + " one and it splits open, the seeds scatter, and you buy a few more seconds. It is the only way to make time.",
     fig: () => '<div style="display:flex;gap:26px;align-items:center">' +
-               '<div style="width:86px">' + art(SVG_POM,"pomegranate.png") + '</div></div>'
+               '<div style="width:86px">' + art("pomegranate.png") + '</div></div>'
   },
   {
     h: "A gilded one carries a scroll",
     p: "Open it and the scroll unrolls with a term of the classical language on it. Answer correctly and the horses surge; answer wrongly and you lose ground &mdash; but the scroll always tells you what the answer was before it furls.",
-    fig: () => '<div style="width:88px;position:relative">' + art(SVG_SCROLLPOM,"pomegranate.png") + '</div>'
+    fig: () => '<div style="width:88px;position:relative">' + art("pomegranate.png") + '</div>'
   },
   {
     h: "The road is measured in modules",
@@ -1748,7 +1669,7 @@ function startLeg(){
   S.vigour = 0.30; paintVigour();
   S.scrollAt = 1400;
 
-  $("#chariot-art").innerHTML = art(SVG_CHARIOT[S.chariot], "chariot-" + S.chariot + ".png");
+  $("#chariot-art").innerHTML = art("chariot-" + S.chariot + ".png");
 
   /* the leg's two plates: far, then near. Only this leg's pair loads. */
   const L = LEGS[S.legIdx];
@@ -1807,7 +1728,7 @@ function spawnFruit(scrolly){
   if(!W) return;
   const el = document.createElement("div");
   el.className = "fruit" + (scrolly ? " scrollfruit" : "");
-  el.innerHTML = art(scrolly ? SVG_SCROLLPOM : SVG_POM, "pomegranate.png");
+  el.innerHTML = art("pomegranate.png");
 
   /* it comes up the road out of the vanishing point, so it starts
      small and near the middle and arrives large and off to one side */
@@ -1992,7 +1913,7 @@ function openScroll(){
 }
 
 function renderScroll(entry, verdict){
-  const [term, def, src] = entry;
+  const term = entry[0], def = wording(entry), src = entry[3];
   const road = $("#road");
   road.querySelectorAll(".scroll-veil").forEach(e => e.remove());
 
@@ -2018,7 +1939,7 @@ function renderScroll(entry, verdict){
       '<div id="verdict-slot"></div>';
   } else {
     const others = shuffle(TERMS[LEGS[S.legIdx].key].filter(t => t[0] !== term)).slice(0,2);
-    const opts = shuffle([[def,true]].concat(others.map(o => [o[1], false])));
+    const opts = shuffle([[def,true]].concat(others.map(o => [wording(o), false])));
     s.innerHTML = head +
       '<p class="scroll-prompt term">' + term + '</p>' +
       '<div class="choices" id="choices">' +
@@ -2069,7 +1990,7 @@ function submitTyped(entry, value){
 }
 
 function settle(entry, right){
-  const [term, def, src] = entry;
+  const term = entry[0], def = wording(entry), src = entry[3];
   const c = CHARIOTS[S.chariot];
   S.answered++;
 
@@ -2178,7 +2099,7 @@ function renderInterlude(){
 function missedBlock(heading){
   return '<div class="missed"><p class="eyebrow" style="margin-bottom:2px">' + heading + '</p>' +
     '<dl style="margin:0">' +
-    S.missed.map(m => '<div class="missed-item"><dt>' + m[0] + '</dt><dd>' + m[1] + '</dd></div>').join("") +
+    S.missed.map(m => '<div class="missed-item"><dt>' + m[0] + '</dt><dd>' + wording(m) + '</dd></div>').join("") +
     '</dl></div>';
 }
 
@@ -2339,9 +2260,9 @@ function buildScriptorium(){
       '<div class="script-head"><b>' + L.name + '</b><span>Leg ' + L.numeral + ' &middot; ' + L.sub + '</span></div>' +
       '<dl style="margin:0">' +
       rows.map(r =>
-        '<div class="entry"><dt>' + r[0] + '</dt><dd>' + r[1] +
-        '<div class="src ' + (r[2]==="V"?"vitr":"") + '">' +
-        (r[2]==="V" ? "Vitruvius" : "Later codification") + '</div></dd></div>'
+        '<div class="entry"><dt>' + r[0] + '</dt><dd>' + wording(r) +
+        '<div class="src ' + (r[3]==="V"?"vitr":"") + '">' +
+        (r[3]==="V" ? "Vitruvius" : "Later codification") + '</div></dd></div>'
       ).join("") +
       '</dl></div>';
   }).join("");
@@ -2362,6 +2283,13 @@ $("#back-title").addEventListener("click", () => show("title"));
 
 $("#mode-type").addEventListener("click", () => { S.mode = "type"; paintMode(); });
 $("#mode-tap").addEventListener("click",  () => { S.mode = "tap";  paintMode(); });
+$("#reg-easy").addEventListener("click", () => setRegister("easy"));
+$("#reg-hard").addEventListener("click", () => setRegister("hard"));
+function setRegister(r){
+  S.register = r;
+  paintMode();
+  buildScriptorium();   /* the glossary follows the register too */
+}
 
 $("#go-tut").addEventListener("click", () => {
   if(sessionStorage.getItem("ltv-tut") === "seen"){ startRun(); return; }
