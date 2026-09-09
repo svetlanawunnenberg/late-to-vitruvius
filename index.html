@@ -2852,6 +2852,10 @@ const Sound = {
     this.master.gain.setValueAtTime(Math.max(0.0001, this.master.gain.value), this.ctx.currentTime);
     this.master.gain.exponentialRampToValueAtTime(Math.max(0.02, Sound.volume * 1.9), this.ctx.currentTime + 0.7);
     if(this.file){ this.file.play().catch(()=>{}); }
+    else if(this.track >= 0 && MUSIC[this.track]){
+      /* the recording is still loading; setTrack starts it on canplay */
+      this.setTrack(this.track);
+    }
     else { clearTimeout(this.bedTimer); this.bedStep(); }
     if(this.galloping){ clearTimeout(this.hoofTimer); this.strideOnce(); }
     return true;
@@ -2899,10 +2903,15 @@ $("#vol").addEventListener("input", ev => {
   $("#vol-num").textContent = ev.target.value;
   if(!Sound.on && v > 0){ if(Sound.enable()) paintSound(); }
 });
+/* Load a recording up front rather than only remembering its number.
+   Without this the file was never created, enable() found nothing, and
+   the synthesised lyre played instead of the music every time. */
+let startTrack = 0;                       /* the Corelli, by default */
 try{
   const tr = parseInt(localStorage.getItem("ltv-track"),10);
-  if(!isNaN(tr)) Sound.track = tr;
+  if(!isNaN(tr)) startTrack = tr;
 }catch(e){}
+Sound.setTrack(startTrack);
 try{
   const sv = parseFloat(localStorage.getItem("ltv-volume"));
   if(!isNaN(sv)){ Sound.volume = sv; $("#vol").value = Math.round(sv*100); $("#vol-num").textContent = Math.round(sv*100); }
