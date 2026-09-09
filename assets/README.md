@@ -50,3 +50,24 @@ does all of it — no Photoshop needed.
   whole camera depends on it.
 - Keep an object under about 300 KB and a backdrop under about 400 KB.
 - Nothing from the office archive, ever. This repository is public.
+
+## Sound
+
+There is no audio file, and there does not need to be. The hooves and the
+plucked drone are synthesised in the browser, so they weigh nothing and there is
+nothing to license.
+
+If you ever want a real recording instead, drop it in as **`assets/music.mp3`**
+and it takes over from the synthesised drone automatically. But read this first:
+
+> **A public-domain composition is not a public-domain recording.** Vivaldi died
+> in 1741, so the *notes* are free — but a modern orchestra's *performance* of
+> them is under copyright for decades. This catches almost everyone. The thing
+> you need is a recording that is itself CC0 or public domain.
+
+[Musopen](https://musopen.org/) is the place: a non-profit whose whole purpose is
+public-domain *performances* of public-domain music. Filter for **CC0**, which
+needs no attribution at all. A free account allows five downloads a day.
+CC BY-SA works too but obliges you to credit the performer in the README.
+
+Keep it under about 2 MB, and pick something that loops without an obvious seam.

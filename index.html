@@ -874,6 +874,31 @@ kbd{
 }
 .linky:hover{ color:var(--ink); border-bottom-color:var(--ink-soft); }
 
+/* ---------- sound switch, in the plate caption ---------- */
+.head-right{ display:flex; align-items:center; gap:14px; }
+.head-title{ white-space:nowrap; }
+.sound-btn{
+  display:inline-flex; align-items:center; gap:7px;
+  font:inherit; letter-spacing:inherit; text-transform:inherit;
+  color:var(--ink-faint);
+  background:none; border:0; padding:4px 2px; cursor:pointer;
+  white-space:nowrap;
+}
+.sound-btn:hover{ color:var(--ink); }
+.sound-btn[aria-pressed="true"]{ color:var(--ink); }
+.sound-ico{
+  width:11px; height:11px; display:block; flex:none;
+  border:1px solid currentColor;
+  border-radius:50%;
+  position:relative;
+}
+.sound-btn[aria-pressed="true"] .sound-ico{ background:var(--pom); border-color:var(--pom); }
+.sound-btn[aria-pressed="true"] .sound-ico::after{
+  content:""; position:absolute; inset:-5px;
+  border:1px solid var(--pom); border-radius:50%; opacity:.45;
+  animation:pulse 1.9s ease-in-out infinite;
+}
+
 /* ---------- toast ---------- */
 .toast{
   position:fixed;
@@ -977,7 +1002,13 @@ html{ overscroll-behavior-y:none; }
 
   <div class="plate-head">
     <span id="plate-no">Plate — <b>Frontispiece</b></span>
-    <span>Late to Vitruvius</span>
+    <span class="head-right">
+      <button class="sound-btn" id="sound-btn" aria-pressed="false">
+        <span class="sound-ico" aria-hidden="true"></span>
+        <span id="sound-label">Sound off</span>
+      </button>
+      <span class="head-title">Late to Vitruvius</span>
+    </span>
   </div>
 
   <!-- ============ TITLE ============ -->
@@ -1187,6 +1218,11 @@ html{ overscroll-behavior-y:none; }
           <li>Answer it. Correct answers move you along the road; the road is measured in <b>modules</b>, eight to a leg.</li>
           <li>Three legs to the lecture. Arrive before the clock empties, and arrive having learned something.</li>
         </ol>
+        <h3>Sound</h3>
+        <ul>
+          <li><b>Off by default.</b> The switch is in the top corner of every screen, and it remembers.</li>
+          <li>The hooves quicken when the run is going well and hold while you read a scroll. There is no audio file &mdash; it is all made in the browser, so it costs nothing to load.</li>
+        </ul>
         <h3>Plain or Exact</h3>
         <ul>
           <li>Set in the yard, before you start. <b>Plain</b> describes each term the way you would point at it on a building; <b>Exact</b> puts it the way a treatise does.</li>
@@ -1667,6 +1703,7 @@ function startLeg(){
   S.lastTick = performance.now();
   S.spawnAt = 0;
   S.vigour = 0.30; paintVigour();
+  Sound.gallop(true);
   S.scrollAt = 1400;
 
   $("#chariot-art").innerHTML = art("chariot-" + S.chariot + ".png");
@@ -1854,6 +1891,7 @@ function loop(now){
     const floor = 0.12 + Math.min(0.34, S.streak * 0.075);
     S.vigour = Math.max(floor, S.vigour - (dt/1000) * 0.55);
     paintVigour();
+    Sound.setPace(S.vigour);
 
     S.spawnAt -= dt;
     if(S.spawnAt <= 0){
@@ -1907,6 +1945,7 @@ function loop(now){
 function openScroll(){
   if(!S.running || S.qIdx >= Q_PER_LEG) return;
   S.paused = true;
+  Sound.gallop(false);   /* the horses hold while you read */
   S.retried = false;
   const entry = S.queue[S.qIdx];
   renderScroll(entry, null);
@@ -2044,6 +2083,7 @@ function settle(entry, right){
     paintHUD(); paintDolly();
     if(S.qIdx >= Q_PER_LEG){ endLeg(true); return; }
     S.paused = false;
+    Sound.gallop(true);
     S.lastTick = performance.now();
     S.scrollAt = 3600 + Math.random()*1800;
   });
@@ -2057,6 +2097,7 @@ function settle(entry, right){
 
 function endLeg(finished){
   S.running = false;
+  Sound.gallop(false);
   S.paused = true;
   cancelAnimationFrame(S.raf);
   clearRoad();
@@ -2323,6 +2364,196 @@ document.addEventListener("visibilitychange", () => {
   else { S.lastTick = performance.now(); }
 });
 
+/* ============================================================
+   13. SOUND
+   Everything here is synthesised in the browser: there is no audio
+   file, so there is nothing to license and nothing to download. The
+   hooves are filtered noise in a four-beat gallop whose stride
+   follows --vigour, so the horses quicken when the run is going
+   well. Under them sits a sparse plucked drone in a modal scale —
+   deliberately not a claimed historical melody, just a colour.
+
+   If assets/music.mp3 is ever added it takes over from the drone.
+   Off by default: nobody should be ambushed by sound.
+   ============================================================ */
+
+const Sound = {
+  on: false,
+  ctx: null,
+  master: null,
+  bedGain: null,
+  noise: null,
+  hoofTimer: 0,
+  bedTimer: 0,
+  galloping: false,
+  pace: 0,
+  file: null,
+
+  init(){
+    if(this.ctx) return true;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if(!AC) return false;
+    try{ this.ctx = new AC(); }catch(e){ return false; }
+
+    this.master = this.ctx.createGain();
+    this.master.gain.value = 0.0001;
+    this.master.connect(this.ctx.destination);
+
+    this.bedGain = this.ctx.createGain();
+    this.bedGain.gain.value = 0.16;
+    this.bedGain.connect(this.master);
+
+    /* one second of noise, reused for every hoofbeat */
+    const n = this.ctx.sampleRate;
+    this.noise = this.ctx.createBuffer(1, n, n);
+    const d = this.noise.getChannelData(0);
+    for(let i=0;i<n;i++) d[i] = Math.random()*2 - 1;
+
+    /* a recording, if one was ever dropped into assets/ */
+    const a = new Audio("assets/music.mp3");
+    a.loop = true; a.volume = 0.34; a.preload = "none";
+    a.addEventListener("canplaythrough", () => { this.file = a; }, { once:true });
+    a.addEventListener("error", () => { this.file = null; }, { once:true });
+    try{ a.load(); }catch(e){}
+
+    return true;
+  },
+
+  /* one hoof striking stone: a thump and a scuff */
+  hoof(when, gain){
+    const c = this.ctx;
+    const src = c.createBufferSource();
+    src.buffer = this.noise;
+    src.playbackRate.value = 0.8 + Math.random()*0.5;
+
+    const bp = c.createBiquadFilter();
+    bp.type = "bandpass";
+    bp.frequency.value = 230 + Math.random()*260;
+    bp.Q.value = 1.1;
+
+    const g = c.createGain();
+    g.gain.setValueAtTime(0.0001, when);
+    g.gain.exponentialRampToValueAtTime(gain, when + 0.006);
+    g.gain.exponentialRampToValueAtTime(0.0001, when + 0.085);
+
+    src.connect(bp); bp.connect(g); g.connect(this.master);
+    src.start(when); src.stop(when + 0.12);
+
+    const o = c.createOscillator();
+    const og = c.createGain();
+    o.type = "sine";
+    o.frequency.setValueAtTime(96, when);
+    o.frequency.exponentialRampToValueAtTime(52, when + 0.07);
+    og.gain.setValueAtTime(0.0001, when);
+    og.gain.exponentialRampToValueAtTime(gain*0.9, when + 0.005);
+    og.gain.exponentialRampToValueAtTime(0.0001, when + 0.09);
+    o.connect(og); og.connect(this.master);
+    o.start(when); o.stop(when + 0.12);
+  },
+
+  /* the four-beat gallop: three quick, one, then air */
+  strideOnce(){
+    if(!this.on || !this.galloping) return;
+    const c = this.ctx;
+    const t = c.currentTime + 0.02;
+    /* 640ms at a walk down to 400ms flat out */
+    const period = 0.64 - this.pace * 0.24;
+    const beats = [0, 0.14, 0.27, 0.45];
+    const gains = [0.16, 0.13, 0.20, 0.10];
+    beats.forEach((b,i) => this.hoof(t + b*period/0.45*0.72, gains[i]*(0.7+this.pace*0.5)));
+    this.hoofTimer = setTimeout(() => this.strideOnce(), period*1000);
+  },
+
+  /* a plucked note, lyre-ish: bright attack, long decay */
+  pluck(freq, when, gain){
+    const c = this.ctx;
+    [1,2,3].forEach((h,i) => {
+      const o = c.createOscillator();
+      const g = c.createGain();
+      o.type = i === 0 ? "triangle" : "sine";
+      o.frequency.value = freq*h;
+      const amp = gain / (h*h);
+      g.gain.setValueAtTime(0.0001, when);
+      g.gain.exponentialRampToValueAtTime(amp, when + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, when + 2.2 + i*0.4);
+      o.connect(g); g.connect(this.bedGain);
+      o.start(when); o.stop(when + 3.0);
+    });
+  },
+
+  bedStep(){
+    if(!this.on || this.file) return;
+    const c = this.ctx;
+    /* D, E, F, G, A, B flat, C — a plain diatonic set, no claims made */
+    const scale = [146.83,164.81,174.61,196.00,220.00,233.08,261.63];
+    const t = c.currentTime + 0.05;
+    const n = scale[Math.floor(Math.random()*scale.length)];
+    this.pluck(n, t, 0.10);
+    if(Math.random() < 0.4) this.pluck(n*1.5, t + 0.42, 0.055);
+    if(Math.random() < 0.25) this.pluck(73.42, t, 0.09);   /* the drone, low D */
+    this.bedTimer = setTimeout(() => this.bedStep(), 1500 + Math.random()*1700);
+  },
+
+  enable(){
+    if(!this.init()) return false;
+    if(this.ctx.state === "suspended") this.ctx.resume();
+    this.on = true;
+    this.master.gain.cancelScheduledValues(this.ctx.currentTime);
+    this.master.gain.setValueAtTime(Math.max(0.0001, this.master.gain.value), this.ctx.currentTime);
+    this.master.gain.exponentialRampToValueAtTime(0.85, this.ctx.currentTime + 0.7);
+    if(this.file){ this.file.play().catch(()=>{}); }
+    else { clearTimeout(this.bedTimer); this.bedStep(); }
+    if(this.galloping){ clearTimeout(this.hoofTimer); this.strideOnce(); }
+    return true;
+  },
+
+  disable(){
+    this.on = false;
+    clearTimeout(this.hoofTimer);
+    clearTimeout(this.bedTimer);
+    if(this.file){ try{ this.file.pause(); }catch(e){} }
+    if(this.ctx){
+      this.master.gain.cancelScheduledValues(this.ctx.currentTime);
+      this.master.gain.setValueAtTime(this.master.gain.value, this.ctx.currentTime);
+      this.master.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + 0.35);
+    }
+  },
+
+  gallop(yes){
+    this.galloping = yes;
+    clearTimeout(this.hoofTimer);
+    if(yes && this.on) this.strideOnce();
+  },
+
+  setPace(v){ this.pace = Math.max(0, Math.min(1, v)); }
+};
+
+function paintSound(){
+  $("#sound-btn").setAttribute("aria-pressed", String(Sound.on));
+  $("#sound-label").textContent = Sound.on ? "Sound on" : "Sound off";
+}
+
+$("#sound-btn").addEventListener("click", () => {
+  if(Sound.on){ Sound.disable(); }
+  else if(!Sound.enable()){ toast("This browser will not play sound"); return; }
+  try{ localStorage.setItem("ltv-sound", Sound.on ? "1" : "0"); }catch(e){}
+  paintSound();
+});
+
+/* Autoplay is blocked until someone interacts, so a remembered
+   preference is armed rather than started: the first tap turns it on. */
+(function(){
+  let want = false;
+  try{ want = localStorage.getItem("ltv-sound") === "1"; }catch(e){}
+  if(!want) return;
+  const arm = () => {
+    document.removeEventListener("pointerdown", arm);
+    if(Sound.enable()) paintSound();
+  };
+  document.addEventListener("pointerdown", arm, { once:true });
+})();
+
+paintSound();
 buildScriptorium();
 show("title");
 </script>
