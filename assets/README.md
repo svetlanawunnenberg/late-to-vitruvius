@@ -71,3 +71,20 @@ needs no attribution at all. A free account allows five downloads a day.
 CC BY-SA works too but obliges you to credit the performer in the README.
 
 Keep it under about 2 MB, and pick something that loops without an obvious seam.
+
+### Where the two current files stand
+
+Both play locally. **Neither is committed** — `.gitignore` holds `assets/music-*.mp3`
+back until each recording's licence is confirmed, because this repository is public.
+
+| Slot | File | Length | State |
+|---|---|---|---|
+| 1 | Corelli, Christmas Concerto | 3:48, 320 kbps | **Blocked.** Filename says "From Master and Commander"; tags stripped. That is a commercial soundtrack recording. |
+| 2 | Bach, Brandenburg 3, third movement | 5:45, 128 kbps | **Unconfirmed.** Japanese-tagged, library-style filename. Free to *use* is not the same as free to *redistribute*. |
+
+To clear slot 1, replace it with a Musopen CC0 recording of the same work — the
+composition is identical, only the performance changes.
+
+Also: 8.8 MB and 5.3 MB against about 4 MB for the whole rest of the game.
+320 kbps is far more than background music needs; 128 kbps mono would sound the
+same here and weigh a quarter as much.
