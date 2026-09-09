@@ -10,104 +10,62 @@
 <title>Late to Vitruvius</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap">
 <style>
 /* ============================================================
    LATE TO VITRUVIUS
-   The look: an engraved architectural plate that moves.
-   Ink on laid paper, dimension annotations in mono, a carmine
-   pomegranate as the only hot colour on the sheet.
+   The look: an engraved plate, printed warm — cream paper, walnut
+   ink, and a cabinet of classical colours: maroon, gilt, pine and
+   a slate green-blue. Committed to the light. It does not follow
+   the machine into a dark theme, because the drawings are cream
+   and a night version of them is a different object.
    ============================================================ */
 
 :root{
-  /* --- paper & ink: neutrals biased green-grey, like an aged plate --- */
-  --paper:      #e4e2d6;
-  --paper-lit:  #efeee4;
-  --paper-deep: #d5d2c3;
-  --ink:        #1c1a17;
-  --ink-soft:   #4a463d;
-  --ink-faint:  #6d675b;
-  --rule:       rgba(28,26,23,.30);
-  --rule-hair:  rgba(28,26,23,.14);
+  color-scheme: light;
 
-  /* --- the only hot colour on the sheet --- */
-  --pom:        #a81f37;
-  --pom-deep:   #7b1428;
-  --fig:        #4a3357;
-  --brass:      #8a7223;
-  --verdigris:  #4f6b5d;
+  /* --- paper and ink: warm, never grey --- */
+  --paper:      #f7f2e7;
+  --paper-lit:  #fdfaf3;
+  --paper-deep: #ece3d1;
+  --ink:        #2b2118;
+  --ink-soft:   #5d4b38;
+  --ink-faint:  #8a7860;
+  --rule:       rgba(43,33,24,.28);
+  --rule-hair:  rgba(43,33,24,.13);
 
-  --sky-hi:     #dcdccd;
-  --sky-lo:     #cfd0c0;
-  --ground:     #cbc6b4;
+  /* --- the cabinet --- */
+  --pom:        #8f2733;   /* maroon: the pomegranate, and the accent */
+  --pom-deep:   #6b1a25;
+  --brass:      #a5842f;   /* gilt */
+  --verdigris:  #35604c;   /* pine */
+  --emerald:    #2f6b52;
+  --slate:      #2f5b66;   /* the green-blue */
+  --fig:        #5a3550;
 
-  --focus:      #a81f37;
+  --sky-hi:     #efe6d2;
+  --sky-lo:     #e3d8c1;
+  --ground:     #ddd0b6;
+
+  --focus:      #8f2733;
 
   /* the shadow layer. --vigour (0..1) is written from the game loop */
   --vigour:      0;
-  --shade-ink:   #14120e;
+  --shade-ink:   #3a2a1c;
   --shade-min:   .10;
-  --shade-range: .30;
+  --shade-range: .28;
   --shade-x:     4px;
   --shade-y:     6px;
-  --shade-blur:  1.4px;
+  --shade-blur:  1.5px;
 
-  --f-display: "Cormorant Garamond", "Palatino Linotype", Palatino, Georgia, serif;
+  /* Cinzel is cut from Roman inscriptional capitals — the nearest
+     thing on the web to engraved copperplate lettering. The old
+     monospace is gone: it was what made the labels look busy. */
+  --f-display: "Cinzel", "Trajan Pro", Optima, "Palatino Linotype", Palatino, Georgia, serif;
   --f-body:    "EB Garamond", "Palatino Linotype", Palatino, Georgia, serif;
-  --f-mono:    "IBM Plex Mono", "Consolas", "SF Mono", ui-monospace, monospace;
+  --f-mono:    "Cormorant Garamond", "Palatino Linotype", Palatino, Georgia, serif;
 
   --plate-max: 1080px;
-}
-
-/* dark = the plate as a lantern slide / photographic negative, not an inversion */
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --paper:      #16171a;
-    --paper-lit:  #1f2126;
-    --paper-deep: #101114;
-    --ink:        #e6e3d7;
-    --ink-soft:   #b4afa0;
-    --ink-faint:  #8d887a;
-    --rule:       rgba(230,227,215,.30);
-    --rule-hair:  rgba(230,227,215,.13);
-    --pom:        #e05266;
-    --pom-deep:   #b8384c;
-    --fig:        #a688bd;
-    --brass:      #cfae4e;
-    --verdigris:  #7fae99;
-    --sky-hi:     #23262c;
-    --sky-lo:     #1a1d21;
-    --ground:     #202227;
-    --focus:      #e05266;
-    /* on a dark ground a cast shadow only reads if it is properly black */
-    --shade-ink:   #000000;
-    --shade-min:   .20;
-    --shade-range: .42;
-    --shade-blur:  1.8px;
-  }
-}
-:root[data-theme="dark"]{
-  --paper:      #16171a;
-  --paper-lit:  #1f2126;
-  --paper-deep: #101114;
-  --ink:        #e6e3d7;
-  --ink-soft:   #b4afa0;
-  --ink-faint:  #8d887a;
-  --rule:       rgba(230,227,215,.30);
-  --rule-hair:  rgba(230,227,215,.13);
-  --pom:        #e05266;
-  --pom-deep:   #b8384c;
-  --fig:        #a688bd;
-  --brass:      #cfae4e;
-  --verdigris:  #7fae99;
-  --sky-hi:     #23262c;
-  --sky-lo:     #1a1d21;
-  --ground:     #202227;
-  --focus:      #e05266;
-  --shade-ink:   #000000;
-  --shade-min:   .20;
-  --shade-range: .42;
-  --shade-blur:  1.8px;
 }
 
 *{ box-sizing:border-box; }
@@ -162,7 +120,7 @@ img{ max-width:100%; }
   border-bottom:1px solid var(--rule-hair);
   font-family:var(--f-mono);
   font-size:10.5px;
-  letter-spacing:.16em;
+  letter-spacing:.08em;
   text-transform:uppercase;
   color:var(--ink-faint);
   flex-wrap:wrap;
@@ -171,9 +129,9 @@ img{ max-width:100%; }
 
 /* ---------- typography ---------- */
 .eyebrow{
-  font-family:var(--f-mono);
+  font-family:var(--f-display);
   font-size:11px;
-  letter-spacing:.3em;
+  letter-spacing:.06em;
   text-transform:uppercase;
   color:var(--ink-faint);
   margin:0;
@@ -182,7 +140,7 @@ h1.title{
   font-family:var(--f-display);
   font-weight:700;
   text-transform:uppercase;
-  letter-spacing:.1em;
+  letter-spacing:.06em;
   line-height:.94;
   text-wrap:balance;
   margin:.18em 0 0;
@@ -191,7 +149,7 @@ h1.title{
 h1.title .lo{
   display:block;
   font-size:.44em;
-  letter-spacing:.34em;
+  letter-spacing:.07em;
   font-weight:400;
   color:var(--ink-soft);
   margin-top:.5em;
@@ -200,7 +158,7 @@ h2.screen-h{
   font-family:var(--f-display);
   font-weight:700;
   text-transform:uppercase;
-  letter-spacing:.13em;
+  letter-spacing:.07em;
   font-size:clamp(1.35rem,4.2vw,2.05rem);
   margin:0;
   text-wrap:balance;
@@ -215,10 +173,10 @@ h2.screen-h{
 
 /* ---------- buttons ---------- */
 .btn{
-  font-family:var(--f-mono);
+  font-family:var(--f-display);
   font-size:12px;
   font-weight:600;
-  letter-spacing:.18em;
+  letter-spacing:.09em;
   text-transform:uppercase;
   padding:13px 26px;
   border:1px solid var(--ink);
@@ -238,7 +196,7 @@ h2.screen-h{
   border-color:var(--rule);
   color:var(--ink-faint);
   padding:10px 16px;
-  letter-spacing:.14em;
+  letter-spacing:.07em;
 }
 .btn-quiet:hover{ background:transparent; color:var(--ink); border-color:var(--ink-soft); }
 .btn-row{ display:flex; flex-wrap:wrap; gap:12px; align-items:center; }
@@ -308,13 +266,13 @@ h2.screen-h{
   font-size:1.4rem;
   font-weight:700;
   text-transform:uppercase;
-  letter-spacing:.1em;
+  letter-spacing:.06em;
   line-height:1;
 }
 .chariot-gloss{
   font-family:var(--f-mono);
   font-size:10px;
-  letter-spacing:.16em;
+  letter-spacing:.08em;
   text-transform:uppercase;
   color:var(--ink-faint);
 }
@@ -326,7 +284,6 @@ h2.screen-h{
   font-family:var(--f-mono);
   font-size:10.5px;
   letter-spacing:.08em;
-  text-transform:uppercase;
   color:var(--ink-faint);
   border-top:1px solid var(--rule-hair);
   padding-top:8px;
@@ -336,9 +293,9 @@ h2.screen-h{
 /* answer-mode toggle */
 .seg{ display:inline-flex; border:1px solid var(--rule); }
 .seg button{
-  font-family:var(--f-mono);
+  font-family:var(--f-display);
   font-size:11px;
-  letter-spacing:.14em;
+  letter-spacing:.07em;
   text-transform:uppercase;
   padding:9px 16px;
   border:0;
@@ -384,7 +341,7 @@ h2.screen-h{
   border-bottom:1px solid var(--rule-hair);
   font-family:var(--f-mono);
   font-size:11px;
-  letter-spacing:.12em;
+  letter-spacing:.06em;
   text-transform:uppercase;
   color:var(--ink-faint);
   flex-wrap:wrap;
@@ -416,7 +373,9 @@ h2.screen-h{
   touch-action:manipulation;
   user-select:none;
   -webkit-user-select:none;
-  --dolly:0;
+  --swap:0;
+  --zoom-a:1;
+  --zoom-b:1;
 }
 .stage{ position:absolute; inset:0; overflow:hidden; }
 .stage img{
@@ -428,27 +387,15 @@ h2.screen-h{
   object-position:center 42%;
   transform-origin:50% 46%;
   will-change:transform, opacity;
-  transition:opacity .9s ease, transform .9s ease;
+  transition:opacity 1.4s ease;
 }
-/* the far plate pulls back and fades as the near plate comes on */
-.stage .far {
-  opacity:calc(1 - var(--dolly));
-  transform:scale(calc(1 + var(--dolly) * 0.30));
-}
-.stage .near{
-  opacity:var(--dolly);
-  transform:scale(calc(0.88 + var(--dolly) * 0.28));
-}
-/* the plates are cream; in the dark theme they are a lantern slide */
-:root:not([data-theme="light"]) .stage img{ filter:none; }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]) .stage img{
-    filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(1.05);
-  }
-}
-:root[data-theme="dark"] .stage img{
-  filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(1.05);
-}
+/* The far plate creeps in on its own, about five per cent every ten
+   seconds, so the road is always closing even while you read. Halfway
+   down the leg it gives way to the near plate, which then takes up
+   the same slow crawl. */
+.stage .far { opacity:calc(1 - var(--swap)); transform:scale(var(--zoom-a)); }
+.stage .near{ opacity:var(--swap);           transform:scale(var(--zoom-b)); }
+/* Her plates are shown as drawn: never inverted, never damped. */
 
 /* ============================================================
    THE SHADOW LAYER
@@ -477,23 +424,38 @@ h2.screen-h{
 .piece img{ object-fit:contain; }
 
 /* your own chariot, seen from behind, holding the centre of the road */
+/* Your chariot sits across the bottom of the road, centred, filling
+   roughly its lowest fifth. Sized from the road itself so it holds its
+   place whatever the window does — never a small thing in a corner. */
 .chariot{
+  --cw: min(86%, 780px);
   position:absolute;
   left:50%;
-  bottom:-2%;
-  width:clamp(190px,42vw,430px);
-  height:clamp(150px,34vw,350px);
-  margin-left:calc(clamp(190px,42vw,430px) / -2);
+  margin-left:calc(var(--cw) / -2);
+  bottom:-6%;
+  width:var(--cw);
+  height:56%;
+  min-height:190px;
   color:var(--ink);
-  animation:sway 2.4s ease-in-out infinite;
   pointer-events:none;
   z-index:3;
 }
-.chariot .piece img{ object-position:bottom center; }
-@keyframes sway{
-  0%,100%{ transform:translate(0,0)    rotate(0deg); }
-  25%    { transform:translate(-5px,-3px) rotate(-.5deg); }
-  75%    { transform:translate(5px,-2px)  rotate(.5deg); }
+.chariot .piece{
+  animation:gallop .58s cubic-bezier(.3,.05,.6,1) infinite;
+  transform-origin:50% 100%;
+}
+.chariot .piece img{ object-fit:contain; object-position:bottom center; }
+
+/* the four-beat stride: gather, drive, float, land. The rig rises off
+   the bottom edge and drops back through it, so the wheels leave frame
+   the way they would if you were standing behind them. */
+@keyframes gallop{
+  0%   { transform:translate(0,0)       scale(1)     rotate(0deg); }
+  18%  { transform:translate(-4px,1.8%) scale(.986)  rotate(-.55deg); }
+  42%  { transform:translate(1px,-3.6%) scale(1.020) rotate(.4deg); }
+  68%  { transform:translate(4px,-1.4%) scale(1.008) rotate(.65deg); }
+  86%  { transform:translate(-1px,1.2%) scale(.993)  rotate(-.25deg); }
+  100% { transform:translate(0,0)       scale(1)     rotate(0deg); }
 }
 
 /* ---------- pomegranates ----------
@@ -626,7 +588,7 @@ h2.screen-h{
 .scale-label{
   font-family:var(--f-mono);
   font-size:10px;
-  letter-spacing:.14em;
+  letter-spacing:.07em;
   text-transform:uppercase;
   color:var(--ink-faint);
   padding-left:14px;
@@ -674,7 +636,7 @@ h2.screen-h{
 .scroll-ask{
   font-family:var(--f-mono);
   font-size:10px;
-  letter-spacing:.24em;
+  letter-spacing:.06em;
   text-transform:uppercase;
   color:var(--ink-faint);
 }
@@ -689,7 +651,7 @@ h2.screen-h{
   font-family:var(--f-display);
   font-weight:700;
   text-transform:uppercase;
-  letter-spacing:.11em;
+  letter-spacing:.06em;
   font-size:clamp(1.5rem,5vw,2.3rem);
   line-height:1.06;
 }
@@ -733,7 +695,7 @@ h2.screen-h{
 .verdict-head{
   font-family:var(--f-mono);
   font-size:11px;
-  letter-spacing:.2em;
+  letter-spacing:.06em;
   text-transform:uppercase;
   font-weight:600;
 }
@@ -745,14 +707,14 @@ h2.screen-h{
   font-family:var(--f-display);
   font-weight:700;
   text-transform:uppercase;
-  letter-spacing:.1em;
+  letter-spacing:.06em;
   font-size:1.28rem;
   color:var(--ink);
 }
 .cite{
   font-family:var(--f-mono);
   font-size:10px;
-  letter-spacing:.13em;
+  letter-spacing:.07em;
   text-transform:uppercase;
   color:var(--ink-faint);
 }
@@ -762,12 +724,12 @@ h2.screen-h{
 .grade-row{ display:flex; flex-direction:column; gap:5px; }
 .grade-top{
   display:flex; align-items:baseline; justify-content:space-between; gap:12px;
-  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.2em; text-transform:uppercase;
+  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.06em; text-transform:uppercase;
   color:var(--ink-faint);
 }
 .grade-top b{
   font-family:var(--f-display); font-size:1.16rem; font-weight:700;
-  letter-spacing:.14em; color:var(--ink);
+  letter-spacing:.07em; color:var(--ink);
 }
 .grade-top .num{ font-family:var(--f-mono); font-weight:600; color:var(--ink); font-variant-numeric:tabular-nums; letter-spacing:.05em; }
 .grade-bar{ height:9px; border:1px solid var(--rule); position:relative; }
@@ -782,7 +744,7 @@ h2.screen-h{
   font-family:var(--f-mono);
   font-size:11px;
   font-weight:600;
-  letter-spacing:.24em;
+  letter-spacing:.06em;
   text-transform:uppercase;
   border:2px solid currentColor;
   padding:7px 14px;
@@ -812,11 +774,11 @@ h2.screen-h{
 .script-group + .script-group{ margin-top:26px; }
 .script-head{
   display:flex; align-items:baseline; gap:12px;
-  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.2em;
+  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.06em;
   text-transform:uppercase; color:var(--ink-faint);
   border-bottom:1px solid var(--rule); padding-bottom:7px; margin-bottom:4px;
 }
-.script-head b{ font-family:var(--f-display); font-size:1.2rem; letter-spacing:.13em; color:var(--ink); font-weight:700; }
+.script-head b{ font-family:var(--f-display); font-size:1.2rem; letter-spacing:.07em; color:var(--ink); font-weight:700; }
 .entry{
   display:grid;
   grid-template-columns:minmax(150px,190px) 1fr;
@@ -832,7 +794,7 @@ h2.screen-h{
 .entry dd{ margin:0; color:var(--ink-soft); font-size:.97rem; }
 .entry .src{
   grid-column:2; font-family:var(--f-mono); font-size:9.5px;
-  letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); margin-top:3px;
+  letter-spacing:.07em; text-transform:uppercase; color:var(--ink-faint); margin-top:3px;
 }
 .entry .src.vitr{ color:var(--brass); }
 
@@ -843,7 +805,7 @@ h2.screen-h{
   gap:0 26px;
 }
 .how-col h3{
-  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.2em;
+  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.06em;
   text-transform:uppercase; color:var(--ink-faint);
   border-bottom:1px solid var(--rule); padding-bottom:7px;
   margin:22px 0 10px; font-weight:600;
@@ -861,7 +823,7 @@ kbd{
   border-top:1px solid var(--rule-hair);
   padding:9px clamp(12px,2.2vw,22px);
   display:flex; justify-content:space-between; align-items:center; gap:12px;
-  font-family:var(--f-mono); font-size:10px; letter-spacing:.15em;
+  font-family:var(--f-mono); font-size:10px; letter-spacing:.08em;
   text-transform:uppercase; color:var(--ink-faint);
   flex-wrap:wrap;
 }
@@ -873,6 +835,90 @@ kbd{
   color:var(--ink-soft); border-bottom:1px solid var(--rule-hair);
 }
 .linky:hover{ color:var(--ink); border-bottom-color:var(--ink-soft); }
+
+/* ---------- the seal, pressed into the scroll when you answer ---------- */
+.seal{
+  position:absolute;
+  top:12px; right:14px;
+  width:72px; height:72px;
+  border-radius:50%;
+  display:grid; place-items:center;
+  background:var(--pom);
+  color:#fbf3ef;
+  font-family:var(--f-display);
+  font-weight:700;
+  font-size:.66rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  text-align:center;
+  line-height:1.05;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--pom) 42%,transparent);
+  animation:press .42s cubic-bezier(.2,1.5,.4,1) both;
+  pointer-events:none;
+  z-index:2;
+}
+.seal.miss{
+  background:var(--ink-faint);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--ink-faint) 38%,transparent);
+}
+.seal i{ display:block; font-style:normal; font-size:1.45rem; letter-spacing:.05em; }
+@keyframes press{
+  0%  { transform:scale(2.1) rotate(-17deg); opacity:0; }
+  55% { transform:scale(.92) rotate(-7deg);  opacity:1; }
+  100%{ transform:scale(1)   rotate(-7deg);  opacity:1; }
+}
+
+/* the bar that runs you on to the next scroll without a second click */
+.furl-bar{ height:3px; background:var(--rule-hair); position:relative; overflow:hidden; }
+.furl-bar i{ position:absolute; inset:0 100% 0 0; background:var(--pom); animation:furl 1.5s linear forwards; }
+@keyframes furl{ to{ right:0; } }
+
+/* ---------- the tally: your cart, and what it carried home ---------- */
+.tally{
+  display:grid;
+  grid-template-columns:minmax(150px,240px) 1fr;
+  gap:clamp(14px,3vw,30px);
+  align-items:end;
+}
+.tally-cart{ position:relative; height:clamp(120px,20vw,190px); }
+.term-list.aced dt{ color:var(--verdigris); }
+.term-list.study dt{ color:var(--pom); }
+@media (max-width:560px){
+  .tally{ grid-template-columns:1fr; }
+  .tally-cart{ height:130px; }
+}
+
+/* ---------- medals ---------- */
+.medals dl{ margin:0; display:flex; flex-direction:column; }
+.medal{
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:2px 14px;
+  padding:10px 0;
+  border-top:1px solid var(--rule-hair);
+  align-items:baseline;
+}
+.medal dt{
+  display:flex; align-items:baseline; gap:9px;
+  font-family:var(--f-display); font-weight:700;
+  text-transform:uppercase; letter-spacing:.06em; font-size:1.05rem;
+  white-space:nowrap;
+}
+.medal dt i{
+  font-family:var(--f-mono); font-style:normal;
+  font-size:9.5px; letter-spacing:.07em; text-transform:uppercase;
+  color:var(--ink-faint);
+}
+.medal dd{ margin:0; color:var(--ink-soft); font-size:.95rem; }
+.medal-mark{
+  width:13px; height:13px; flex:none; align-self:center;
+  background:var(--brass);
+  clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+}
+@media (max-width:560px){
+  .medal{ grid-template-columns:1fr; }
+  .medal dt{ white-space:normal; }
+}
 
 /* ---------- sound switch, in the plate caption ---------- */
 .head-right{ display:flex; align-items:center; gap:14px; }
@@ -892,6 +938,13 @@ kbd{
   border-radius:50%;
   position:relative;
 }
+.reg-ico{
+  width:11px; height:11px; display:block; flex:none;
+  border:1px solid currentColor;
+  position:relative;
+}
+.reg-btn[data-reg="hard"] .reg-ico{ background:var(--brass); border-color:var(--brass); }
+.reg-btn[data-reg="hard"]{ color:var(--ink); }
 .sound-btn[aria-pressed="true"] .sound-ico{ background:var(--pom); border-color:var(--pom); }
 .sound-btn[aria-pressed="true"] .sound-ico::after{
   content:""; position:absolute; inset:-5px;
@@ -912,7 +965,7 @@ kbd{
   color:var(--paper-lit);
   font-family:var(--f-mono);
   font-size:11px;
-  letter-spacing:.14em;
+  letter-spacing:.07em;
   text-transform:uppercase;
   text-align:center;
   opacity:0;
@@ -951,7 +1004,7 @@ html{ overscroll-behavior-y:none; }
 }
 
 @media (max-width:720px){
-  .hud{ gap:10px 14px; font-size:10px; letter-spacing:.1em; }
+  .hud{ gap:10px 14px; font-size:10px; letter-spacing:.06em; }
   .hud .stat b{ font-size:14px; }
   .road{ min-height:200px; }
   .btn-row{ gap:9px; }
@@ -966,7 +1019,7 @@ html{ overscroll-behavior-y:none; }
   .chariot{ width:clamp(104px,30vw,150px); height:clamp(74px,21vw,110px); left:5%; }
   .scroll{ padding:16px 15px 18px; }
   .scale-label{ font-size:9px; padding-left:10px; }
-  .plate-head{ font-size:9.5px; letter-spacing:.12em; }
+  .plate-head{ font-size:9.5px; letter-spacing:.06em; }
   .btn-row .btn{ min-width:100%; }
 }
 
@@ -1003,6 +1056,10 @@ html{ overscroll-behavior-y:none; }
   <div class="plate-head">
     <span id="plate-no">Plate — <b>Frontispiece</b></span>
     <span class="head-right">
+      <button class="sound-btn reg-btn" id="reg-btn" title="Switch how every scroll is worded">
+        <span class="reg-ico" aria-hidden="true"></span>
+        <span id="reg-btn-label">Plain</span>
+      </button>
       <button class="sound-btn" id="sound-btn" aria-pressed="false">
         <span class="sound-ico" aria-hidden="true"></span>
         <span id="sound-label">Sound off</span>
@@ -1195,7 +1252,7 @@ html{ overscroll-behavior-y:none; }
       <p class="eyebrow">Every term in the game</p>
       <h2 class="screen-h">The Scriptorium</h2>
     </div>
-    <p class="lede">Definitions are kept short on purpose &mdash; this is a drill, not a dictionary. They are shown in whichever wording you picked in the yard &mdash; <b>Plain</b> or <b>Exact</b>. Terms marked <span style="color:var(--brass);font-family:var(--f-mono);font-size:10px;letter-spacing:.13em">VITRUVIUS</span> appear in <em>De architectura</em> itself; the rest are later codification, chiefly Renaissance.</p>
+    <p class="lede">Definitions are kept short on purpose &mdash; this is a drill, not a dictionary. They are shown in whichever wording you picked in the yard &mdash; <b>Plain</b> or <b>Exact</b>. Terms marked <span style="color:var(--brass);font-family:var(--f-mono);font-size:10px;letter-spacing:.07em">VITRUVIUS</span> appear in <em>De architectura</em> itself; the rest are later codification, chiefly Renaissance.</p>
     <div class="scriptorium" id="script-body"></div>
     <div class="btn-row"><button class="btn btn-quiet" id="script-back">Back</button></div>
   </section>
@@ -1548,8 +1605,15 @@ const S = {
   correct: 0,
   answered: 0,
   fruitPopped: 0,
+  perfectLegs: 0,
+  fastest: 0,
+  phase: 0,
+  phaseStart: 0,
+  furlTimer: 0,
+  askedAt: 0,
   vigour: 0,
   missed: [],
+  aced: [],
   marks: [],
   running: false,
   paused: false,
@@ -1651,12 +1715,12 @@ const TUT = [
     h: TAP + " the pomegranates",
     p: "The water clock is draining from the moment you set off. Pomegranates cross the road as you pass the sellers &mdash; " + TAP.toLowerCase() + " one and it splits open, the seeds scatter, and you buy a few more seconds. It is the only way to make time.",
     fig: () => '<div style="display:flex;gap:26px;align-items:center">' +
-               '<div style="width:86px">' + art("pomegranate.png") + '</div></div>'
+               '<div style="width:96px;height:96px;position:relative">' + art("pomegranate.png") + '</div></div>'
   },
   {
     h: "A gilded one carries a scroll",
     p: "Open it and the scroll unrolls with a term of the classical language on it. Answer correctly and the horses surge; answer wrongly and you lose ground &mdash; but the scroll always tells you what the answer was before it furls.",
-    fig: () => '<div style="width:88px;position:relative">' + art("pomegranate.png") + '</div>'
+    fig: () => '<div style="width:104px;height:104px;position:relative">' + art("pomegranate.png") + '</div>'
   },
   {
     h: "The road is measured in modules",
@@ -1664,7 +1728,7 @@ const TUT = [
     fig: () => '<div style="width:80%"><div style="height:1px;background:var(--rule)"></div>' +
                '<div style="display:flex;justify-content:space-between;margin-top:-1px">' +
                Array.from({length:9},(_,i)=>'<div style="width:'+(i%4===0?2:1)+'px;height:'+(i%4===0?14:8)+'px;background:var(--'+(i<5?'pom':'rule')+')"></div>').join("") +
-               '</div><div style="font-family:var(--f-mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);margin-top:9px;text-align:center">4 / 8 modules</div></div>'
+               '</div><div style="font-family:var(--f-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-top:9px;text-align:center">4 / 8 modules</div></div>'
   }
 ];
 
@@ -1686,7 +1750,8 @@ function startRun(){
   S.legIdx = 0;
   S.score = 0; S.streak = 0; S.bestStreak = 0;
   S.correct = 0; S.answered = 0; S.fruitPopped = 0;
-  S.missed = [];
+  S.perfectLegs = 0; S.fastest = 0;
+  S.missed = []; S.aced = [];
   startLeg();
 }
 
@@ -1714,7 +1779,12 @@ function startLeg(){
   far.style.display = near.style.display = "";
   far.src  = L.bg[0];
   near.src = L.bg[1];
-  paintDolly();
+  S.phase = 0;
+  S.phaseStart = performance.now();
+  $("#road").style.setProperty("--swap","0");
+  $("#road").style.setProperty("--zoom-a","1");
+  $("#road").style.setProperty("--zoom-b","1");
+  paintDolly(S.phaseStart);
   clearRoad();
   buildTicks();
   paintHUD();
@@ -1738,10 +1808,23 @@ function clearRoad(){
   $$("#road .fruit, #road .burst, #road .seeds, #road .scroll-veil").forEach(e => e.remove());
 }
 
-/* how far down this leg you have come, 0..1 — drives the backdrop dolly */
-function paintDolly(){
-  const d = Math.max(0, Math.min(1, S.qIdx / Q_PER_LEG));
-  $("#road").style.setProperty("--dolly", d.toFixed(3));
+/* The approach runs on the clock, not on your answers: about five per
+   cent every ten seconds, so the walls are always closing even while
+   you read. Halfway down the leg the far plate hands over to the near
+   one, which then takes up the same slow crawl from scratch. */
+function paintDolly(now){
+  const road = $("#road");
+  now = now || performance.now();
+
+  if(S.phase === 0 && S.qIdx >= Q_PER_LEG / 2){
+    S.phase = 1;
+    S.phaseStart = now;
+    road.style.setProperty("--swap", "1");
+  }
+
+  const secs = Math.max(0, (now - S.phaseStart) / 1000);
+  const zoom = 1 + Math.min(0.55, secs * 0.005);   /* 5% per 10s, capped */
+  road.style.setProperty(S.phase === 0 ? "--zoom-a" : "--zoom-b", zoom.toFixed(4));
 }
 
 function paintHUD(){
@@ -1926,7 +2009,7 @@ function loop(now){
       el.style.zIndex = 4 + Math.round(el._t * 6);
     });
 
-    paintHUD(); paintDolly();
+    paintHUD(); paintDolly(now);
 
     if(S.time <= 0){
       S.time = 0;
@@ -1946,6 +2029,7 @@ function openScroll(){
   if(!S.running || S.qIdx >= Q_PER_LEG) return;
   S.paused = true;
   Sound.gallop(false);   /* the horses hold while you read */
+  S.askedAt = performance.now();
   S.retried = false;
   const entry = S.queue[S.qIdx];
   renderScroll(entry, null);
@@ -2041,6 +2125,7 @@ function settle(entry, right){
     S.score += Math.round(120 * c.pts * Math.min(5, S.streak));
     S.marks[S.qIdx] = "done";
     stir(0.55 + Math.min(0.45, S.streak * 0.12));
+    S.aced.push(entry);
   } else {
     S.streak = 0;
     S.time = Math.max(0.6, S.time - 3);
@@ -2052,23 +2137,45 @@ function settle(entry, right){
   const tick = $('#scale-track .scale-tick[data-i="' + S.qIdx + '"]');
   if(tick) tick.classList.add(right ? "done" : "miss");
 
+  /* how quickly it was recognised — the best of the run is worth a line */
+  const took = S.askedAt ? (performance.now() - S.askedAt) / 1000 : 0;
+  if(right && took > 0 && (!S.fastest || took < S.fastest)) S.fastest = took;
+
   const slot = $("#verdict-slot");
   const srcTxt = src === "V"
     ? "Vitruvius, De architectura"
     : "Later codification &mdash; Serlio, Vignola, Palladio and after";
 
+  /* the seal comes down on the scroll: satisfying, and it says everything
+     before you have read a word of the verdict */
+  const scrollEl = $(".scroll");
+  if(scrollEl){
+    const seal = document.createElement("div");
+    seal.className = "seal" + (right ? "" : " miss");
+    seal.innerHTML = right
+      ? '<span><i>&#10003;</i>' + (took ? took.toFixed(1) + "s" : "") + '</span>'
+      : '<span><i>&times;</i>&minus;3s</span>';
+    scrollEl.appendChild(seal);
+  }
+
+  const gained = right ? Math.round(120 * c.pts * Math.min(5, S.streak)) : 0;
+
   slot.innerHTML =
     '<div class="verdict ' + (right ? "good" : "bad") + '">' +
       '<span class="verdict-head">' +
-        (right ? "Correct &middot; +" + c.perCorrect + "s" : "Not that &middot; &minus;3s") +
+        (right
+          ? "Correct &middot; +" + c.perCorrect + "s &middot; +" + gained +
+            (S.streak > 1 ? " &middot; streak &times;" + Math.min(5,S.streak) : "")
+          : "Not that &middot; &minus;3s") +
       '</span>' +
       '<span class="term-was">' + term + '</span>' +
       '<p>' + def + '</p>' +
       '<span class="cite">' + srcTxt + '</span>' +
     '</div>' +
+    (right ? '<div class="furl-bar" aria-hidden="true"><i></i></div>' : "") +
     '<div class="btn-row" style="margin-top:13px">' +
       '<button class="btn btn-primary" id="scroll-on">' +
-        (S.qIdx + 1 >= Q_PER_LEG ? "Drive on" : "Furl the scroll") +
+        (S.qIdx + 1 >= Q_PER_LEG ? "Drive on" : (right ? "Driving on&hellip;" : "Furl the scroll")) +
       '</button>' +
     '</div>';
 
@@ -2077,10 +2184,19 @@ function settle(entry, right){
 
   const on = $("#scroll-on");
   on.focus({preventScroll:true});
+
+  /* right answers carry you on by themselves — no second click to earn
+     something you have already earned. A miss waits, so you can read it. */
+  let ran = false;
+  if(right) S.furlTimer = setTimeout(() => { if(!ran) on.click(); }, 1550);
+
   on.addEventListener("click", () => {
+    if(ran) return;
+    ran = true;
+    clearTimeout(S.furlTimer);
     S.qIdx++;
     $$("#road .scroll-veil").forEach(e => e.remove());
-    paintHUD(); paintDolly();
+    paintHUD(); paintDolly(performance.now());
     if(S.qIdx >= Q_PER_LEG){ endLeg(true); return; }
     S.paused = false;
     Sound.gallop(true);
@@ -2098,6 +2214,7 @@ function settle(entry, right){
 function endLeg(finished){
   S.running = false;
   Sound.gallop(false);
+  if(finished && S.marks.length && S.marks.every(m => m === "done")) S.perfectLegs++;
   S.paused = true;
   cancelAnimationFrame(S.raf);
   clearRoad();
@@ -2137,6 +2254,14 @@ function renderInterlude(){
   $("#res-quit").addEventListener("click", () => show("title"));
 }
 
+function termList(heading, list, kind){
+  if(!list.length) return "";
+  return '<div class="missed term-list ' + kind + '"><p class="eyebrow" style="margin-bottom:2px">' +
+    heading + ' &middot; ' + list.length + '</p><dl style="margin:0">' +
+    list.map(m => '<div class="missed-item"><dt>' + m[0] + '</dt><dd>' + wording(m) + '</dd></div>').join("") +
+    '</dl></div>';
+}
+
 function missedBlock(heading){
   return '<div class="missed"><p class="eyebrow" style="margin-bottom:2px">' + heading + '</p>' +
     '<dl style="margin:0">' +
@@ -2156,6 +2281,14 @@ function renderArrival(arrived){
     (S.bestStreak / (Q_PER_LEG * 0.75)) * 55 + Math.min(45, S.fruitPopped * 1.6)));
 
   const admitted = arrived && firmitas >= 65;
+
+  const won = medalsWon({
+    arrived, admitted, firmitas, utilitas, venustas,
+    answered: S.answered, missed: S.missed.length,
+    perfectLegs: S.perfectLegs, bestStreak: S.bestStreak,
+    fruit: S.fruitPopped, timeFrac: arrived ? timeLeft / S.maxTime : 0,
+    chariotKey: S.chariot, register: S.register
+  });
 
   let verdictLine;
   if(admitted && firmitas >= 90)
@@ -2190,12 +2323,22 @@ function renderArrival(arrived){
       bar("How well you did it","Venustas",venustas, "Longest streak " + S.bestStreak + "; " + S.fruitPopped + " pomegranates split.") +
     '</div>' +
 
-    '<div class="spec" style="max-width:340px;border-top:1px solid var(--rule)">' +
-      '<span>Final score</span><b>' + Math.round(S.score) + '</b>' +
-      '<span>Chariot</span><b>' + CHARIOTS[S.chariot].name + '</b>' +
+    '<div class="tally">' +
+      '<div class="tally-cart">' + art("chariot-" + S.chariot + ".png") + '</div>' +
+      '<div class="spec" style="border-top:1px solid var(--rule)">' +
+        '<span>Final score</span><b>' + Math.round(S.score) + '</b>' +
+        '<span>Chariot</span><b>' + CHARIOTS[S.chariot].name + '</b>' +
+        '<span>Terms aced</span><b>' + S.aced.length + '</b>' +
+        '<span>Terms to study</span><b>' + S.missed.length + '</b>' +
+        (S.fastest ? '<span>Quickest recognition</span><b>' + S.fastest.toFixed(1) + 's</b>' : "") +
+        '<span>Wording</span><b>' + (S.register === "hard" ? "Exact" : "Plain") + '</b>' +
+      '</div>' +
     '</div>' +
 
-    (S.missed.length ? missedBlock("Read these before you come back") : "") +
+    medalBlock(won) +
+
+    (S.missed.length ? termList("Terms to study", S.missed, "study") : "") +
+    (S.aced.length   ? termList("Terms aced", S.aced, "aced") : "") +
 
     '<div class="btn-row">' +
       '<button class="btn btn-primary" id="res-share">' + SHARE_LABEL + '</button>' +
@@ -2210,8 +2353,63 @@ function renderArrival(arrived){
   $("#res-script").addEventListener("click", () => show("script"));
   $("#res-share").addEventListener("click", () => shareRun({
     arrived, admitted, firmitas, utilitas, venustas,
-    score: Math.round(S.score), chariot: CHARIOTS[S.chariot].name
+    score: Math.round(S.score), chariot: CHARIOTS[S.chariot].name,
+    medals: won, register: S.register
   }));
+}
+
+/* ============================================================
+   10a. MEDALS
+   Named out of the Roman military decorations and out of Vitruvius,
+   because a laurel means more here than "Gold Tier".
+   ============================================================ */
+
+const MEDALS = [
+  { key:"corona",   name:"Corona Civica",  latin:"the civic crown",
+    note:"Seated by Vitruvius.",
+    won:g => g.admitted },
+  { key:"laurel",   name:"Laurel",          latin:"for knowing the thing",
+    note:"Ninety in a hundred scrolls, or better.",
+    won:g => g.firmitas >= 90 },
+  { key:"sine",     name:"Sine Errore",     latin:"without a single error",
+    note:"Not one scroll missed, the whole way in.",
+    won:g => g.answered > 0 && g.missed === 0 },
+  { key:"eustyle",  name:"Eustyle",         latin:"a leg answered whole",
+    note:"All eight modules of a leg, clean.",
+    won:g => g.perfectLegs >= 1 },
+  { key:"hermog",   name:"Hermogenes",      latin:"for an unbroken run",
+    note:"Eight correct in a row.",
+    won:g => g.bestStreak >= 8 },
+  { key:"tempore",  name:"Ex Tempore",      latin:"and time to spare",
+    note:"Arrived with more than half the clock still in the vessel.",
+    won:g => g.arrived && g.timeFrac > 0.5 },
+  { key:"orchard",  name:"The Orchard",     latin:"for the sellers' loss",
+    note:"Twenty-five pomegranates opened.",
+    won:g => g.fruit >= 25 },
+  { key:"vitruvian",name:"Vitruvian",       latin:"all three answered",
+    note:"Firmitas, utilitas and venustas each at seventy-five.",
+    won:g => g.firmitas >= 75 && g.utilitas >= 75 && g.venustas >= 75 },
+  { key:"scholar",  name:"The Scholar's Cart", latin:"the hard way in",
+    note:"Admitted driving the carpentum, which moves on knowledge alone.",
+    won:g => g.admitted && g.chariotKey === "carpentum" },
+  { key:"exact",    name:"Ad Litteram",     latin:"to the letter",
+    note:"Admitted with the scrolls in their exact wording.",
+    won:g => g.admitted && g.register === "hard" },
+  { key:"araeo",    name:"Araeostyle",      latin:"spread too thin",
+    note:"You arrived, but the span was wider than the knowledge would carry.",
+    won:g => g.arrived && !g.admitted }
+];
+
+function medalsWon(g){ return MEDALS.filter(m => { try{ return m.won(g); }catch(e){ return false; } }); }
+
+function medalBlock(won){
+  if(!won.length) return "";
+  return '<div class="medals"><p class="eyebrow" style="margin-bottom:4px">' +
+    (won.length === 1 ? "One decoration" : won.length + " decorations") + '</p><dl>' +
+    won.map(m =>
+      '<div class="medal"><dt><span class="medal-mark" aria-hidden="true"></span>' + m.name +
+      '<i>' + m.latin + '</i></dt><dd>' + m.note + '</dd></div>'
+    ).join("") + '</dl></div>';
 }
 
 /* ============================================================
@@ -2231,7 +2429,7 @@ function runCard(g){
     const n = Math.max(0, Math.min(10, Math.round(v/10)));
     return "■".repeat(n) + "□".repeat(10-n);
   };
-  return [
+  const lines = [
     "LATE TO VITRUVIUS",
     verdict,
     "",
@@ -2239,8 +2437,16 @@ function runCard(g){
     "UTILITAS  " + bar(g.utilitas) + " " + g.utilitas,
     "VENUSTAS  " + bar(g.venustas) + " " + g.venustas,
     "",
-    g.score.toLocaleString() + " in the " + g.chariot + "."
-  ].join("\n");
+    g.score.toLocaleString() + " in the " + g.chariot +
+      ", on " + (g.register === "hard" ? "exact" : "plain") + " wording.",
+    S.aced.length + " terms aced, " + S.missed.length + " to study" +
+      (S.fastest ? ", quickest in " + S.fastest.toFixed(1) + "s" : "") + "."
+  ];
+  if(g.medals && g.medals.length){
+    lines.push("");
+    lines.push(g.medals.map(m => "✦ " + m.name).join("   "));
+  }
+  return lines.join("\n");
 }
 
 function shareRun(g){
@@ -2326,11 +2532,49 @@ $("#mode-type").addEventListener("click", () => { S.mode = "type"; paintMode(); 
 $("#mode-tap").addEventListener("click",  () => { S.mode = "tap";  paintMode(); });
 $("#reg-easy").addEventListener("click", () => setRegister("easy"));
 $("#reg-hard").addEventListener("click", () => setRegister("hard"));
+
+/* the same switch lives in the plate caption, so the difficulty can be
+   changed from anywhere — including mid-run, between scrolls */
+$("#reg-btn").addEventListener("click", () => {
+  setRegister(S.register === "easy" ? "hard" : "easy");
+  toast(S.register === "easy"
+    ? "Plain wording &mdash; described as you would point at it"
+    : "Exact wording &mdash; as a treatise puts it");
+});
+
 function setRegister(r){
   S.register = r;
+  try{ localStorage.setItem("ltv-register", r); }catch(e){}
   paintMode();
+  paintRegBtn();
   buildScriptorium();   /* the glossary follows the register too */
 }
+
+function paintRegBtn(){
+  const b = $("#reg-btn");
+  b.dataset.reg = S.register;
+  $("#reg-btn-label").textContent = S.register === "hard" ? "Exact" : "Plain";
+}
+
+try{
+  const r = localStorage.getItem("ltv-register");
+  if(r === "easy" || r === "hard") S.register = r;
+}catch(e){}
+paintRegBtn();
+
+/* ---- desktop: X opens whatever pomegranate is under the pointer ---- */
+let ptrX = -1, ptrY = -1;
+document.addEventListener("pointermove", ev => { ptrX = ev.clientX; ptrY = ev.clientY; }, { passive:true });
+document.addEventListener("keydown", ev => {
+  if(ev.key !== "x" && ev.key !== "X") return;
+  if(!S.running || S.paused) return;
+  const t = ev.target;
+  if(t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+  if(ptrX < 0) return;
+  const under = document.elementFromPoint(ptrX, ptrY);
+  const fruit = under && under.closest ? under.closest(".fruit") : null;
+  if(fruit){ ev.preventDefault(); popFruit(fruit); }
+});
 
 $("#go-tut").addEventListener("click", () => {
   if(sessionStorage.getItem("ltv-tut") === "seen"){ startRun(); return; }
