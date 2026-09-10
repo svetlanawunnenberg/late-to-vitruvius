@@ -99,6 +99,7 @@ img{ max-width:100%; }
   flex-direction:column;
 }
 .plate-inner{
+  position:relative;
   flex:1;
   border:1px solid var(--rule);
   outline:3px solid var(--rule-hair);
@@ -681,6 +682,17 @@ h2.screen-h{
   cursor:pointer;
   transition:border-color .14s ease, background .14s ease;
 }
+.choices.arming{ position:relative; }
+.choices.arming .choice{ opacity:.35; cursor:default; transition:opacity .3s ease; }
+.choices.arming::after{
+  content:"";
+  position:absolute; left:0; right:0; top:-7px; height:2px;
+  background:var(--brass);
+  transform-origin:left;
+  animation:arm .95s linear forwards;
+}
+@keyframes arm{ from{ transform:scaleX(0); } to{ transform:scaleX(1); } }
+
 .choice:hover{ border-color:var(--ink-soft); background:color-mix(in srgb,var(--ink) 4%,transparent); }
 .choice.right{ border-color:var(--verdigris); background:color-mix(in srgb,var(--verdigris) 16%,transparent); }
 .choice.wrong{ border-color:var(--pom); background:color-mix(in srgb,var(--pom) 12%,transparent); }
@@ -959,6 +971,80 @@ kbd{
   .medal dt{ white-space:normal; }
 }
 
+/* ---------- the top bar: title first, everything else behind a menu ---------- */
+.plate-head{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:10px;
+  position:sticky;
+  top:0;
+  z-index:40;
+  background:var(--paper-lit);
+}
+.head-title{
+  font-family:var(--f-display);
+  font-weight:700;
+  font-size:clamp(13px,3.4vw,17px);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--ink);
+  text-align:center;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.head-home, .head-menu{
+  background:none; border:0; padding:8px; cursor:pointer;
+  color:var(--ink-soft); display:grid; place-items:center;
+  min-width:40px; min-height:38px;
+}
+.head-home:hover, .head-menu:hover{ color:var(--ink); }
+.head-home-ico{
+  width:15px; height:15px; display:block;
+  border:1.6px solid currentColor;
+  border-top-color:transparent; border-right-color:transparent;
+  transform:rotate(45deg);
+}
+.burger{ display:grid; gap:3.5px; width:19px; }
+.burger i{ display:block; height:1.8px; background:currentColor; border-radius:2px; }
+.vh{
+  position:absolute; width:1px; height:1px; overflow:hidden;
+  clip:rect(0 0 0 0); white-space:nowrap;
+}
+
+.menu-panel{
+  position:absolute;
+  top:100%; right:clamp(8px,2vw,18px);
+  z-index:45;
+  min-width:min(310px, calc(100vw - 28px));
+  background:var(--paper-lit);
+  border:1px solid var(--rule);
+  outline:3px solid var(--rule-hair); outline-offset:2px;
+  padding:14px 16px 16px;
+  display:flex; flex-direction:column; gap:12px;
+  box-shadow:0 14px 34px rgba(43,33,24,.16);
+}
+.menu-row{ display:flex; align-items:center; gap:12px; justify-content:space-between; }
+.menu-label{
+  font-family:var(--f-display); font-size:11px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint);
+  white-space:nowrap;
+}
+.menu-row input[type=range]{ flex:1; accent-color:var(--pom); height:22px; min-width:90px; }
+.menu-row b{ color:var(--ink); min-width:2.4em; text-align:right; font-variant-numeric:tabular-nums; font-size:12px; }
+.menu-links{
+  display:flex; flex-wrap:wrap; gap:14px;
+  border-top:1px solid var(--rule-hair); padding-top:11px;
+}
+
+/* selected reads solid, unselected reads clearly lifted away */
+.seg button{ opacity:.55; font-weight:400; }
+.seg button[aria-pressed="true"]{
+  background:var(--ink); color:var(--paper-lit);
+  opacity:1; font-weight:600;
+}
+
 /* ---------- sound switch, in the plate caption ---------- */
 .head-right{ display:flex; align-items:center; gap:14px; }
 .head-title{ white-space:nowrap; }
@@ -1093,18 +1179,51 @@ html{ overscroll-behavior-y:none; }
 <div class="plate-inner">
 
   <div class="plate-head">
-    <span id="plate-no">Plate — <b>Frontispiece</b></span>
-    <span class="head-right">
-      <button class="sound-btn reg-btn" id="reg-btn" title="Switch how every scroll is worded">
-        <span class="reg-ico" aria-hidden="true"></span>
-        <span id="reg-btn-label">Plain</span>
-      </button>
+    <button class="head-home" id="head-home" title="Back to the start">
+      <span class="head-home-ico" aria-hidden="true"></span>
+    </button>
+
+    <span class="head-title">Late to Vitruvius</span>
+
+    <button class="head-menu" id="menu-btn" aria-expanded="false" aria-controls="menu-panel">
+      <span class="burger" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="vh">Settings</span>
+    </button>
+  </div>
+
+  <!-- everything you might want to change, out of the way until asked for -->
+  <div class="menu-panel" id="menu-panel" hidden>
+    <div class="menu-row">
+      <span class="menu-label">Wording</span>
+      <span class="seg" role="group" aria-label="Wording">
+        <button id="reg-easy-m" aria-pressed="true">Plain</button>
+        <button id="reg-hard-m" aria-pressed="false">Exact</button>
+      </span>
+    </div>
+    <div class="menu-row">
+      <span class="menu-label">Answering</span>
+      <span class="seg" role="group" aria-label="Answering">
+        <button id="mode-type-m" aria-pressed="false">Type</button>
+        <button id="mode-tap-m" aria-pressed="false">Tap</button>
+      </span>
+    </div>
+    <div class="menu-row">
+      <span class="menu-label">Sound</span>
       <button class="sound-btn" id="sound-btn" aria-pressed="false">
         <span class="sound-ico" aria-hidden="true"></span>
-        <span id="sound-label">Sound off</span>
+        <span id="sound-label">Off</span>
       </button>
-      <span class="head-title">Late to Vitruvius</span>
-    </span>
+    </div>
+    <div class="menu-row">
+      <span class="menu-label">Volume</span>
+      <input type="range" id="vol" min="0" max="100" value="75" aria-label="Volume">
+      <b id="vol-num">75</b>
+    </div>
+    <div class="menu-links">
+      <button class="linky" id="menu-script">The Scriptorium</button>
+      <button class="linky" id="menu-how">How to play</button>
+      <button class="linky" id="menu-home">Start again</button>
+    </div>
   </div>
 
   <!-- ============ TITLE ============ -->
@@ -1226,13 +1345,6 @@ html{ overscroll-behavior-y:none; }
     </div>
 
     <div>
-      <p class="eyebrow" style="margin-bottom:9px">Sound</p>
-      <label class="vol">
-        <span>Volume</span>
-        <input type="range" id="vol" min="0" max="100" value="75" aria-label="Volume">
-        <b id="vol-num">75</b>
-      </label>
-
       <p class="eyebrow" style="margin-bottom:9px">What plays while you drive</p>
       <div class="music-list" id="music-list"></div>
       <p class="lede" style="margin-top:9px;font-size:.94rem">
@@ -1696,15 +1808,14 @@ function show(which){
   if(cur && cur !== which && which !== "script" && which !== "how") priorScreen = cur;
   else if(cur && (which === "script" || which === "how")) priorScreen = cur;
   SCREENS.forEach(s => { $("#screen-"+s).hidden = (s !== which); });
-  const heads = {
-    title:"Frontispiece", chariot:"The Yard", tut:"Instruction",
-    game:"", result:"", script:"Scriptorium", how:"Instruction"
-  };
+  /* the title bar names the leg while you are on the road, and the
+     game itself everywhere else */
+  const t = $(".head-title");
   if(which === "game" || which === "result"){
     const L = LEGS[Math.min(S.legIdx, LEGS.length-1)];
-    $("#plate-no").innerHTML = "Plate " + L.numeral + " &mdash; <b>" + L.name + "</b>";
+    t.textContent = L.numeral + " · " + L.name;
   } else {
-    $("#plate-no").innerHTML = "Plate &mdash; <b>" + heads[which] + "</b>";
+    t.textContent = "Late to Vitruvius";
   }
   $("#screen-"+which).scrollTop = 0;
   /* off the road the shadows sit at a calm resting weight */
@@ -1754,6 +1865,12 @@ function paintMode(){
   $("#reg-note").innerHTML = S.register === "easy"
     ? "Described as you would <em>point at it</em> on a building."
     : "Put as a <em>treatise</em> puts it &mdash; leaning on the other terms of art. Same vocabulary; <em>reading the clue</em> is the hard part.";
+
+  /* the same two switches in the menu stay in step */
+  $("#reg-easy-m").setAttribute("aria-pressed", String(S.register === "easy"));
+  $("#reg-hard-m").setAttribute("aria-pressed", String(S.register === "hard"));
+  $("#mode-type-m").setAttribute("aria-pressed", String(S.mode === "type"));
+  $("#mode-tap-m").setAttribute("aria-pressed",  String(S.mode === "tap"));
 }
 
 /* ============================================================
@@ -1907,7 +2024,8 @@ function spawnFruit(scrolly){
   if(!W) return;
   const el = document.createElement("div");
   el.className = "fruit" + (scrolly ? " scrollfruit" : "");
-  el.innerHTML = art("pomegranate.png");
+  /* the one that carries a question is a scroll, not another pomegranate */
+  el.innerHTML = art(scrolly ? "scroll.png" : "pomegranate.png");
 
   /* it comes up the road out of the vanishing point, so it starts
      small and near the middle and arrives large and off to one side */
@@ -1973,9 +2091,9 @@ function popFruit(el){
   /* the fruit opens along its seam, and the seeds go everywhere.
      Where the drawn pomegranate exists, swap in the split one. */
   el.classList.add("popped");
-  el.querySelectorAll("img").forEach(im => {
-    im.src = "assets/pomegranate-split.png";
-  });
+  if(!scrolly){
+    el.querySelectorAll("img").forEach(im => { im.src = "assets/pomegranate-split.png"; });
+  }
   scatterSeeds(cx, cy, scrolly ? 16 : 12, scrolly ? "--brass" : "--pom");
   setTimeout(() => el.remove(), 700);
   stir(scrolly ? 0.6 : 0.34);
@@ -2132,6 +2250,19 @@ function renderScroll(entry, verdict){
   }
 
   road.appendChild(veil);
+
+  /* Hold the answers for a moment. The scroll lands under your finger,
+     and without this the tap that opened it can carry straight through
+     into a wrong answer. */
+  const arming = s.querySelector(".choices");
+  if(arming){
+    arming.classList.add("arming");
+    arming.querySelectorAll(".choice").forEach(b => b.disabled = true);
+    setTimeout(() => {
+      arming.classList.remove("arming");
+      arming.querySelectorAll(".choice").forEach(b => { if(!b.dataset.done) b.disabled = false; });
+    }, 950);
+  }
 
   if(S.mode === "type"){
     const inp = s.querySelector("#ans-input");
@@ -2592,34 +2723,53 @@ $("#mode-tap").addEventListener("click",  () => { S.mode = "tap";  paintMode(); 
 $("#reg-easy").addEventListener("click", () => setRegister("easy"));
 $("#reg-hard").addEventListener("click", () => setRegister("hard"));
 
-/* the same switch lives in the plate caption, so the difficulty can be
-   changed from anywhere — including mid-run, between scrolls */
-$("#reg-btn").addEventListener("click", () => {
-  setRegister(S.register === "easy" ? "hard" : "easy");
-  toast(S.register === "easy"
-    ? "Plain wording &mdash; described as you would point at it"
-    : "Exact wording &mdash; as a treatise puts it");
-});
+/* the same two switches live in the menu, so either can be changed from
+   anywhere — including mid-run, between scrolls */
+$("#reg-easy-m").addEventListener("click", () => setRegister("easy"));
+$("#reg-hard-m").addEventListener("click", () => setRegister("hard"));
+$("#mode-type-m").addEventListener("click", () => { S.mode = "type"; paintMode(); });
+$("#mode-tap-m").addEventListener("click",  () => { S.mode = "tap";  paintMode(); });
 
 function setRegister(r){
   S.register = r;
   try{ localStorage.setItem("ltv-register", r); }catch(e){}
   paintMode();
-  paintRegBtn();
   buildScriptorium();   /* the glossary follows the register too */
-}
-
-function paintRegBtn(){
-  const b = $("#reg-btn");
-  b.dataset.reg = S.register;
-  $("#reg-btn-label").textContent = S.register === "hard" ? "Exact" : "Plain";
 }
 
 try{
   const r = localStorage.getItem("ltv-register");
   if(r === "easy" || r === "hard") S.register = r;
 }catch(e){}
-paintRegBtn();
+
+/* ---- the settings menu ---- */
+function closeMenu(){
+  $("#menu-panel").hidden = true;
+  $("#menu-btn").setAttribute("aria-expanded","false");
+}
+$("#menu-btn").addEventListener("click", () => {
+  const p = $("#menu-panel");
+  const open = p.hidden;
+  p.hidden = !open;
+  $("#menu-btn").setAttribute("aria-expanded", String(open));
+});
+document.addEventListener("click", ev => {
+  if($("#menu-panel").hidden) return;
+  if(ev.target.closest("#menu-panel") || ev.target.closest("#menu-btn")) return;
+  closeMenu();
+});
+$("#menu-script").addEventListener("click", () => { closeMenu(); show("script"); });
+$("#menu-how").addEventListener("click",   () => { closeMenu(); show("how"); });
+$("#menu-home").addEventListener("click",  () => { closeMenu(); goHome(); });
+$("#head-home").addEventListener("click",  () => goHome());
+
+function goHome(){
+  S.running = false; S.paused = true;
+  cancelAnimationFrame(S.raf);
+  Sound.gallop(false);
+  clearRoad();
+  show("title");
+}
 
 /* ---- desktop: X opens whatever pomegranate is under the pointer ---- */
 let ptrX = -1, ptrY = -1;
@@ -2760,20 +2910,25 @@ const Sound = {
     }
     clearTimeout(this.bedTimer);
     const a = new Audio("assets/" + MUSIC[i].file);
-    a.loop = true; a.volume = 0.62; a.preload = "none";
-    a.addEventListener("canplay", () => {
-      this.file = a;
-      if(this.on) a.play().catch(()=>{});
-      paintMusic();
-    }, { once:true });
+    a.loop = true;
+    a.volume = Math.min(1, this.volume * 0.85);
+    a.preload = "none";        /* nothing downloads until sound is wanted */
+
+    /* Register it straight away. Waiting on "canplay" cannot work with
+       preload:none — the browser never loads, the event never fires, and
+       the track stays silent for ever. play() does the loading itself. */
+    this.file = a;
+
     a.addEventListener("error", () => {
-      /* the file is not there yet — fall back rather than go silent */
-      this.file = null;
+      /* genuinely missing or unplayable: fall back rather than go silent */
+      if(this.file === a) this.file = null;
       MUSIC[i].missing = true;
       if(this.on){ clearTimeout(this.bedTimer); this.bedStep(); }
       paintMusic();
-    }, { once:true });
-    try{ a.load(); }catch(e){}
+    });
+
+    if(this.on) a.play().catch(() => {});
+    paintMusic();
   },
 
   /* one hoof striking stone: a thump and a scuff */
@@ -2966,8 +3121,10 @@ $("#sound-btn").addEventListener("click", () => {
 /* Autoplay is blocked until someone interacts, so a remembered
    preference is armed rather than started: the first tap turns it on. */
 (function(){
-  let want = false;
-  try{ want = localStorage.getItem("ltv-sound") === "1"; }catch(e){}
+  /* on unless deliberately turned off. Browsers block audio until the
+     first interaction, so this arms it and the first tap starts it. */
+  let want = true;
+  try{ want = localStorage.getItem("ltv-sound") !== "0"; }catch(e){}
   if(!want) return;
   const arm = () => {
     document.removeEventListener("pointerdown", arm);
