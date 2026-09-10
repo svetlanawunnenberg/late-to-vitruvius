@@ -1544,12 +1544,12 @@ const CHARIOTS = {
   },
   quadriga: {
     name:"Quadriga", gloss:"Four horses",
-    blurb:"Most time, and fruit is worth most. The forgiving one "Heavy, slow, and wide enough to sweep up everything by the roadside. The most forgiving cart in the yard. Start here.",mdash; <em>start here</em>.",
+    blurb:"Most time, and fruit is worth most. The forgiving one &mdash; <em>start here</em>.",
     time:58, perCorrect:3, fruitMul:1.7, pts:1.0
   },
   carpentum: {
     name:"Carpentum", gloss:"The scholar's cart",
-    blurb:"No use in a hurry. <em>Knowing the answer</em> is the only thing that moves it "Covered, dignified and no use in a hurry. Knowing the answer is the only thing that moves it &mdash; but knowing it moves it a very long way.",mdash; and it moves it a very long way.",
+    blurb:"No use in a hurry. <em>Knowing the answer</em> is the only thing that moves it &mdash; and it moves it a very long way.",
     time:40, perCorrect:8, fruitMul:0.6, pts:1.55
   }
 };
@@ -1768,18 +1768,18 @@ const TUT = [
   },
   {
     h: TAP + " the pomegranates",
-    p: "The water clock drains from the moment you set off. " + TAP + " a pomegranate and it <em>splits open</em> p: "The water clock is draining from the moment you set off. Pomegranates cross the road as you pass the sellers &mdash; " + TAP.toLowerCase() + " one and it splits open, the seeds scatter, and you buy a few more seconds. It is the only way to make time.",mdash; seeds everywhere, and a few more seconds. <em>The only way to make time.</em>",
+    p: "The water clock drains from the moment you set off. " + TAP + " a pomegranate and it <em>splits open</em> &mdash; seeds everywhere, and a few more seconds. <em>The only way to make time.</em>",
     fig: () => '<div style="display:flex;gap:26px;align-items:center">' +
                '<div style="width:96px;height:96px;position:relative">' + art("pomegranate.png") + '</div></div>'
   },
   {
     h: "A gilded one carries a scroll",
-    p: "Open it and a term unrolls. Right, and the horses <em>surge</em>. Wrong, and you lose ground p: "Open it and the scroll unrolls with a term of the classical language on it. Answer correctly and the horses surge; answer wrongly and you lose ground &mdash; but the scroll always tells you what the answer was before it furls.",mdash; but <em>it always tells you the answer</em> before it furls.",
+    p: "Open it and a term unrolls. Right, and the horses <em>surge</em>. Wrong, and you lose ground &mdash; but <em>it always tells you the answer</em> before it furls.",
     fig: () => '<div style="width:70%;height:78%;position:relative">' + art("scroll.png") + '</div>'
   },
   {
     h: "The road is measured in modules",
-    p: "Eight scrolls to a leg, three legs to the lecture. At the door he grades you on his own three terms p: "Eight scrolls to a leg, three legs to the lecture. At the door Vitruvius grades you on his own three terms &mdash; firmitas for what you knew, utilitas for how fast you got there, venustas for how well you did it.",mdash; <em>firmitas</em>, <em>utilitas</em>, <em>venustas</em>.",
+    p: "Eight scrolls to a leg, three legs to the lecture. At the door he grades you on his own three terms &mdash; <em>firmitas</em>, <em>utilitas</em>, <em>venustas</em>.",
     fig: () => '<div style="width:80%"><div style="height:1px;background:var(--rule)"></div>' +
                '<div style="display:flex;justify-content:space-between;margin-top:-1px">' +
                Array.from({length:9},(_,i)=>'<div style="width:'+(i%4===0?2:1)+'px;height:'+(i%4===0?14:8)+'px;background:var(--'+(i<5?'pom':'rule')+')"></div>').join("") +
