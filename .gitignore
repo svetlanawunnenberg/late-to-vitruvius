@@ -12,8 +12,3 @@ _*.png
 Thumbs.db
 desktop.ini
 .DS_Store
-
-# Music: held back from the public repo until each recording's licence is
-# confirmed. A public-domain COMPOSITION is not a public-domain RECORDING.
-# These play fine from a local copy; they are simply not published.
-assets/music-*.mp3

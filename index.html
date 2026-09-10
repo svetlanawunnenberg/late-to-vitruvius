@@ -1236,6 +1236,10 @@ html{ overscroll-behavior-y:none; }
       <p class="eyebrow" style="margin-bottom:9px">What plays while you drive</p>
       <div class="music-list" id="music-list"></div>
       <p class="lede" style="margin-top:9px;font-size:.94rem">
+        All three played by the <strong>Advent Chamber Orchestra</strong>, released
+        under CC BY-SA 2.0 &mdash; freely licensed, credited here as the licence asks.
+      </p>
+      <p class="lede" style="margin-top:9px;font-size:.94rem">
         Three pieces that argue the game&rsquo;s case &mdash; <em>systems of proportion, not styles</em>.
         Vitruvius sets it up himself: Book V turns from theatres to <em>harmonics</em>.
       </p>
@@ -2689,19 +2693,22 @@ document.addEventListener("visibilitychange", () => {
    Each slot expects a file. Until one is there, the synthesised
    drone plays instead and the entry says so.
    ------------------------------------------------------------ */
+const PLAYERS = "Advent Chamber Orchestra";
+const PLAYERS_LICENCE = "CC BY-SA 2.0";
+
 const MUSIC = [
   { file:"music-1.mp3",
-    title:"Concerto grosso in G minor, Op. 6 No. 8",
+    title:"Concerto grosso in D, Op. 6 No. 4 &mdash; Adagio, Allegro",
     who:"Corelli", when:"Rome, published 1714",
-    note:"The Christmas Concerto. Written in Rome, and the concerto grosso is the closest music comes to an order &mdash; a fixed system of parts, the same members recurring at two scales." },
+    note:"Written in Rome, and the concerto grosso is the closest music comes to an order &mdash; a fixed system of parts, the same members recurring at two scales." },
   { file:"music-2.mp3",
-    title:"Brandenburg Concerto No. 3 in G, third movement",
+    title:"Brandenburg Concerto No. 3 in G &mdash; Allegro",
     who:"Bach", when:"1721",
-    note:"Nine solo strings in three groups of three. Relentless forward motion — the closest thing in the repertoire to being late for something." },
+    note:"Nine solo strings in three groups of three. Relentless forward motion &mdash; the closest thing in the repertoire to being late for something." },
   { file:"music-3.mp3",
-    title:"L'estro armonico, Op. 3 No. 10 in B minor, RV 580",
+    title:"L'estro armonico, Op. 3 No. 8 in A minor &mdash; Allegro",
     who:"Vivaldi", when:"Venice, 1711",
-    note:"Four violins in dialogue, which is a proportional system rather than a tune. Drive without heaviness &mdash; what a road wants." }
+    note:"Two violins in dialogue, which is a proportional system rather than a tune. Drive without heaviness &mdash; what a road wants." }
 ];
 
 const Sound = {
@@ -2753,7 +2760,7 @@ const Sound = {
     }
     clearTimeout(this.bedTimer);
     const a = new Audio("assets/" + MUSIC[i].file);
-    a.loop = true; a.volume = 0.62;
+    a.loop = true; a.volume = 0.62; a.preload = "none";
     a.addEventListener("canplay", () => {
       this.file = a;
       if(this.on) a.play().catch(()=>{});

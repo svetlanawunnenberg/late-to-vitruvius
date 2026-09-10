@@ -53,45 +53,38 @@ does all of it — no Photoshop needed.
 
 ## Sound
 
-There is no audio file, and there does not need to be. The hooves and the
-plucked drone are synthesised in the browser, so they weigh nothing and there is
-nothing to license.
+The hooves and the fallback lyre are synthesised in the browser — no files, no
+licence, no weight. The three recordings are real, and they are cleared.
 
-If you ever want a real recording instead, drop it in as **`assets/music.mp3`**
-and it takes over from the synthesised drone automatically. But read this first:
+### The music, and its credit
 
-> **A public-domain composition is not a public-domain recording.** Vivaldi died
-> in 1741, so the *notes* are free — but a modern orchestra's *performance* of
-> them is under copyright for decades. This catches almost everyone. The thing
-> you need is a recording that is itself CC0 or public domain.
+| Slot | Work | Size |
+|---|---|---|
+| 1 | Corelli, Concerto grosso in D, Op. 6 No. 4 — Adagio, Allegro | 2.7 MB |
+| 2 | Bach, Brandenburg Concerto No. 3 in G — Allegro | 4.3 MB |
+| 3 | Vivaldi, L'estro armonico, Op. 3 No. 8 in A minor — Allegro | 2.7 MB |
 
-[Musopen](https://musopen.org/) is the place: a non-profit whose whole purpose is
-public-domain *performances* of public-domain music. Filter for **CC0**, which
-needs no attribution at all. A free account allows five downloads a day.
-CC BY-SA works too but obliges you to credit the performer in the README.
+All three are performed by the **Advent Chamber Orchestra** (Roxanna Pavel
+Goldstein, Musical Director), from the Al Goldstein collection at ibiblio.org
+via [Wikimedia Commons](https://commons.wikimedia.org/wiki/Category:Audio_files_of_classical_music_by_the_Advent_Chamber_Orchestra),
+released under [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/).
 
-Keep it under about 2 MB, and pick something that loops without an obvious seam.
+**That credit is the licence condition and must stay** — in the game's music
+list, and here. It is the whole reason these can be published when the earlier
+files could not.
 
-### Where the three current files stand
+Downloaded as Ogg Vorbis and converted to 112 kbps MP3, which halves the weight
+and plays on older iPhones that Ogg does not reach.
 
-All three play locally. **None is committed** — `.gitignore` holds
-`assets/music-*.mp3` back, because this repository is public and none of these
-recordings is cleared.
+### Why the first three files were replaced
 
-| Slot | Work | File | Why it is held |
-|---|---|---|---|
-| 1 | Corelli, Christmas Concerto, Op. 6 No. 8 | 8.7 MB · 3:48 · 320 kbps | Tags stripped, filename says "From Master and Commander". A commercial film soundtrack. |
-| 2 | Bach, Brandenburg 3, third movement | 5.3 MB · 5:45 · 128 kbps | Japanese-tagged, library-style filename. Free to *use* is not free to *redistribute*. |
-| 3 | Vivaldi, L'estro armonico, Op. 3 No. 10 | 14.6 MB · 10:34 · 192 kbps | Tagged **I Musici** — a famous commercial recording on Philips. Clearly not free. |
+The originally supplied recordings were a *Master and Commander* soundtrack rip,
+a Japanese BGM-library file, and an I Musici performance on Philips. The
+compositions were correctly chosen and are long out of copyright — Corelli died
+in 1713 — but **a public-domain composition is not a public-domain recording**,
+and a performance carries its own copyright for decades. Crediting a commercial
+recording does not license it; credit satisfies a Creative Commons licence, and
+does nothing for an all-rights-reserved one.
 
-None of this matters for playing the game yourself. It matters only for
-publishing, because publishing is redistribution.
-
-**The fix changes the performance, not a note of the music.** On
-[Musopen](https://musopen.org/), filter to **CC0**, find each work, download the
-MP3, and save it over the file of the same name. The game does not care which
-orchestra it is.
-
-Size is the second reason to replace them: **29 MB of audio against 4 MB for the
-whole rest of the game.** Choose a two-to-three minute movement rather than a
-ten-minute one, and 128 kbps is ample for something playing under hoofbeats.
+The pieces here are the same three choices, played by an orchestra that gave
+its recordings away.
