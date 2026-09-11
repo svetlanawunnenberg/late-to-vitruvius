@@ -262,6 +262,19 @@ h2.screen-h{
 .chariot-card .art{ position:relative; height:88px; }
 .chariot-card .art svg{ position:absolute; inset:0; width:100%; height:100%; color:var(--ink-soft); }
 .chariot-card .art img{ position:absolute; inset:0; width:100%; height:100%; object-fit:contain; }
+.chariot-diff{
+  align-self:flex-start;
+  font-family:var(--f-display);
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.09em;
+  text-transform:uppercase;
+  padding:3px 9px;
+  border:1px solid currentColor;
+}
+.chariot-diff.diff-easy{ color:var(--emerald); }
+.chariot-diff.diff-medium{ color:var(--brass); }
+.chariot-diff.diff-hard{ color:var(--pom); }
 .chariot-name{
   font-family:var(--f-display);
   font-size:1.4rem;
@@ -349,12 +362,12 @@ h2.screen-h{
 }
 .hud .stat{ display:flex; align-items:baseline; gap:6px; }
 .hud .stat b{
-  font-weight:600; color:var(--ink);
-  font-size:15px; font-variant-numeric:tabular-nums;
-  letter-spacing:.02em;
+  font-weight:700; color:var(--ink);
+  font-size:18px; font-variant-numeric:tabular-nums;
+  letter-spacing:.01em;
 }
 .hud .grow{ flex:1; }
-#streak-flag{ color:var(--pom); font-weight:600; }
+#streak-flag{ color:var(--emerald); font-weight:600; }
 
 /* the road */
 /* ============================================================
@@ -576,7 +589,7 @@ h2.screen-h{
   height:7px;
   background:var(--rule);
 }
-.scale-tick.done{ background:var(--pom); height:12px; width:2px; }
+.scale-tick.done{ background:var(--emerald); height:12px; width:2px; }
 .scale-tick.miss{ background:var(--ink-faint); height:12px; width:2px; }
 .scale-mark{
   position:absolute;
@@ -627,6 +640,64 @@ h2.screen-h{
   from{ transform:scaleY(.04); opacity:0; }
   to{ transform:scaleY(1); opacity:1; }
 }
+
+/* ---------- the halfway card: a pause with nothing to click ---------- */
+.halfway{
+  position:absolute;
+  inset:0;
+  z-index:22;
+  display:grid;
+  place-items:center;
+  padding:clamp(12px,3vw,28px);
+  background:color-mix(in srgb, var(--paper) 55%, transparent);
+  animation:halfway-in .4s cubic-bezier(.22,.9,.3,1);
+}
+.halfway.going{ animation:halfway-out .5s ease forwards; }
+@keyframes halfway-in{
+  from{ opacity:0; transform:scale(.94); }
+  to{ opacity:1; transform:scale(1); }
+}
+@keyframes halfway-out{
+  from{ opacity:1; transform:scale(1); }
+  to{ opacity:0; transform:scale(1.03); }
+}
+.halfway-card{
+  width:min(360px,100%);
+  background:var(--paper-lit);
+  border:1px solid var(--rule);
+  outline:3px solid var(--rule-hair);
+  outline-offset:3px;
+  padding:clamp(18px,4vw,28px);
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.halfway-score{
+  font-family:var(--f-display);
+  font-weight:700;
+  font-size:clamp(2.2rem,9vw,3.1rem);
+  letter-spacing:.02em;
+  color:var(--pom);
+  font-variant-numeric:tabular-nums;
+  line-height:1;
+}
+.halfway-grid{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:5px 14px;
+  text-align:left;
+  font-family:var(--f-mono);
+  font-size:13px;
+  color:var(--ink-faint);
+  border-top:1px solid var(--rule-hair);
+  border-bottom:1px solid var(--rule-hair);
+  padding:10px 4px;
+}
+.halfway-grid b{ color:var(--ink); font-variant-numeric:tabular-nums; text-align:right; }
+.halfway-note{ margin:0; font-size:.94rem; color:var(--ink-soft); }
+.halfway-note.ahead{ color:var(--emerald); font-weight:600; }
+
 .scroll-rod{
   height:5px;
   background:var(--ink-soft);
@@ -855,7 +926,7 @@ kbd{
   width:72px; height:72px;
   border-radius:50%;
   display:grid; place-items:center;
-  background:var(--pom);
+  background:var(--emerald);
   color:#fbf3ef;
   font-family:var(--f-display);
   font-weight:700;
@@ -864,14 +935,14 @@ kbd{
   text-transform:uppercase;
   text-align:center;
   line-height:1.05;
-  box-shadow:0 0 0 3px color-mix(in srgb,var(--pom) 42%,transparent);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--emerald) 42%,transparent);
   animation:press .42s cubic-bezier(.2,1.5,.4,1) both;
   pointer-events:none;
   z-index:2;
 }
 .seal.miss{
-  background:var(--ink-faint);
-  box-shadow:0 0 0 3px color-mix(in srgb,var(--ink-faint) 38%,transparent);
+  background:var(--pom);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--pom) 38%,transparent);
 }
 .seal i{ display:block; font-style:normal; font-size:1.45rem; letter-spacing:.05em; }
 @keyframes press{
@@ -882,7 +953,7 @@ kbd{
 
 /* the bar that runs you on to the next scroll without a second click */
 .furl-bar{ height:3px; background:var(--rule-hair); position:relative; overflow:hidden; }
-.furl-bar i{ position:absolute; inset:0 100% 0 0; background:var(--pom); animation:furl 1.5s linear forwards; }
+.furl-bar i{ position:absolute; inset:0 100% 0 0; background:var(--emerald); animation:furl 1.5s linear forwards; }
 @keyframes furl{ to{ right:0; } }
 
 /* ---------- the tally: your cart, and what it carried home ---------- */
@@ -1032,6 +1103,17 @@ kbd{
   white-space:nowrap;
 }
 .menu-row input[type=range]{ flex:1; accent-color:var(--pom); height:22px; min-width:90px; }
+.menu-row-stack{ flex-direction:column; align-items:stretch; gap:6px; }
+.music-select{
+  width:100%;
+  font-family:var(--f-body);
+  font-size:14px;
+  padding:9px 10px;
+  background:var(--paper);
+  color:var(--ink);
+  border:1px solid var(--rule);
+  border-radius:0;
+}
 .menu-row b{ color:var(--ink); min-width:2.4em; text-align:right; font-variant-numeric:tabular-nums; font-size:12px; }
 .menu-links{
   display:flex; flex-wrap:wrap; gap:14px;
@@ -1129,8 +1211,8 @@ html{ overscroll-behavior-y:none; }
 }
 
 @media (max-width:720px){
-  .hud{ gap:10px 14px; font-size:10px; letter-spacing:.06em; }
-  .hud .stat b{ font-size:14px; }
+  .hud{ gap:9px 14px; font-size:10.5px; letter-spacing:.05em; padding:8px 12px; }
+  .hud .stat b{ font-size:17px; }
   .road{ min-height:200px; }
   .btn-row{ gap:9px; }
   .btn-row .btn{ flex:1 1 auto; min-width:44%; text-align:center; }
@@ -1141,11 +1223,25 @@ html{ overscroll-behavior-y:none; }
   .entry .src{ grid-column:1; }
   .missed-item{ grid-template-columns:1fr; }
   .clepsydra{ width:18px; right:8px; }
-  .chariot{ width:clamp(104px,30vw,150px); height:clamp(74px,21vw,110px); left:5%; }
+  .chariot{ --cw: min(92%, 480px); height:52%; min-height:150px; }
   .scroll{ padding:16px 15px 18px; }
   .scale-label{ font-size:9px; padding-left:10px; }
   .plate-head{ font-size:9.5px; letter-spacing:.06em; }
   .btn-row .btn{ min-width:100%; }
+  /* the scroll fits on one phone screen -- no scroll needed to answer */
+  .scroll{ padding:14px 14px 16px; gap:10px; }
+  .scroll-rod{ display:none; }
+  .scroll-ask{ font-size:9px; letter-spacing:.1em; }
+  .scroll-prompt{ font-size:clamp(1rem,4.8vw,1.2rem); line-height:1.32; }
+  .scroll-prompt.term{ font-size:clamp(1.3rem,7vw,1.7rem); }
+  .answer-form{ gap:7px; }
+  .answer-form input{ min-width:0; padding:10px 12px; }
+  .choices{ gap:7px; }
+  .choice{ padding:11px 13px; font-size:.92rem; }
+  .verdict{ padding-top:9px; gap:3px; }
+  .term-was{ font-size:1.08rem; }
+  .verdict p{ font-size:.9rem; }
+  .cite{ font-size:8.5px; }
 }
 
 /* a phone held sideways has almost no height to spare */
@@ -1196,8 +1292,8 @@ html{ overscroll-behavior-y:none; }
     <div class="menu-row">
       <span class="menu-label">Wording</span>
       <span class="seg" role="group" aria-label="Wording">
-        <button id="reg-easy-m" aria-pressed="true">Plain</button>
-        <button id="reg-hard-m" aria-pressed="false">Exact</button>
+        <button id="reg-easy-m" aria-pressed="true">Beginner</button>
+        <button id="reg-hard-m" aria-pressed="false">Expert</button>
       </span>
     </div>
     <div class="menu-row">
@@ -1218,6 +1314,10 @@ html{ overscroll-behavior-y:none; }
       <span class="menu-label">Volume</span>
       <input type="range" id="vol" min="0" max="100" value="75" aria-label="Volume">
       <b id="vol-num">75</b>
+    </div>
+    <div class="menu-row menu-row-stack">
+      <span class="menu-label">Music</span>
+      <select id="music-select" class="music-select" aria-label="Choose the music"></select>
     </div>
     <div class="menu-links">
       <button class="linky" id="menu-script">The Scriptorium</button>
@@ -1319,18 +1419,18 @@ html{ overscroll-behavior-y:none; }
   <!-- ============ CHARIOT ============ -->
   <section class="screen" id="screen-chariot" hidden>
     <div>
-      <p class="eyebrow">Choose your conveyance</p>
-      <h2 class="screen-h">Three chariots stand in the yard</h2>
+      <p class="eyebrow">Choose your difficulty</p>
+      <h2 class="screen-h">Three chariots, three difficulties</h2>
     </div>
-    <p class="lede">Three different races, not three colours. The <em>biga</em> rewards speed; the <em>carpentum</em> turns <em>knowledge</em> into distance.</p>
+    <p class="lede">Each chariot is a different difficulty, not a different colour. <b>Quadriga</b> is easiest &mdash; most time, most forgiving. <b>Carpentum</b> is hardest to drive but rewards <em>knowing the answer</em> the most.</p>
 
     <div class="card-grid" id="chariot-grid"></div>
 
     <div>
-      <p class="eyebrow" style="margin-bottom:9px">How the scrolls are worded</p>
+      <p class="eyebrow" style="margin-bottom:9px">Difficulty</p>
       <div class="seg" role="group" aria-label="Wording">
-        <button id="reg-easy" aria-pressed="false">Plain</button>
-        <button id="reg-hard" aria-pressed="false">Exact</button>
+        <button id="reg-easy" aria-pressed="false">Beginner</button>
+        <button id="reg-hard" aria-pressed="false">Expert</button>
       </div>
       <p class="lede" style="margin-top:9px;font-size:.94rem" id="reg-note"></p>
     </div>
@@ -1389,7 +1489,7 @@ html{ overscroll-behavior-y:none; }
       <span class="stat">Scrolls <b id="hud-q">0/8</b></span>
       <span class="stat" id="streak-flag" hidden>Streak &times;<b id="hud-streak">1</b></span>
       <span class="grow"></span>
-      <span class="stat">Clepsydra <b id="hud-time">0</b>s</span>
+      <span class="stat">Time <b id="hud-time">0</b>s</span>
       <button class="btn btn-quiet" id="btn-quit" style="padding:6px 12px">Give up</button>
     </div>
 
@@ -1654,17 +1754,17 @@ const LEGS = [
 
 const CHARIOTS = {
   biga: {
-    name:"Biga", gloss:"Two horses",
+    name:"Biga", gloss:"Two horses", difficulty:"Hard",
     blurb:"Least time in the clock, most ground covered. For someone who <em>already knows their mouldings</em>.",
     time:46, perCorrect:4, fruitMul:1.0, pts:1.35
   },
   quadriga: {
-    name:"Quadriga", gloss:"Four horses",
+    name:"Quadriga", gloss:"Four horses", difficulty:"Easy",
     blurb:"Most time, and fruit is worth most. The forgiving one &mdash; <em>start here</em>.",
     time:58, perCorrect:3, fruitMul:1.7, pts:1.0
   },
   carpentum: {
-    name:"Carpentum", gloss:"The scholar's cart",
+    name:"Carpentum", gloss:"The scholar's cart", difficulty:"Medium",
     blurb:"No use in a hurry. <em>Knowing the answer</em> is the only thing that moves it &mdash; and it moves it a very long way.",
     time:40, perCorrect:8, fruitMul:0.6, pts:1.55
   }
@@ -1781,6 +1881,7 @@ const S = {
   phase: 0,
   phaseStart: 0,
   furlTimer: 0,
+  halfTimer: 0,
   askedAt: 0,
   vigour: 0,
   missed: [],
@@ -1837,11 +1938,12 @@ function buildChariots(){
     b.dataset.key = key;
     b.innerHTML =
       '<div class="art">' + art("chariot-" + key + ".png") + '</div>' +
+      '<span class="chariot-diff diff-' + c.difficulty.toLowerCase() + '">' + c.difficulty + '</span>' +
       '<div><div class="chariot-name">' + c.name + '</div>' +
       '<div class="chariot-gloss">' + c.gloss + '</div></div>' +
       '<p>' + c.blurb + '</p>' +
       '<div class="spec">' +
-        '<span>Clepsydra</span><b>' + c.time + 's</b>' +
+        '<span>Time to start</span><b>' + c.time + 's</b>' +
         '<span>Per correct answer</span><b>+' + c.perCorrect + 's</b>' +
         '<span>Pomegranates worth</span><b>&times;' + c.fruitMul.toFixed(1) + '</b>' +
       '</div>';
@@ -1871,6 +1973,62 @@ function paintMode(){
   $("#reg-hard-m").setAttribute("aria-pressed", String(S.register === "hard"));
   $("#mode-type-m").setAttribute("aria-pressed", String(S.mode === "type"));
   $("#mode-tap-m").setAttribute("aria-pressed",  String(S.mode === "tap"));
+}
+
+/* ------------------------------------------------------------
+   Halfway down a leg the plate changes and the road holds for
+   five seconds: where you stand, against your own record. It
+   clears itself -- there is nothing to click.
+   ------------------------------------------------------------ */
+function personalBest(){
+  try{ const b = parseInt(localStorage.getItem("ltv-best"),10); return isNaN(b) ? 0 : b; }
+  catch(e){ return 0; }
+}
+function savePersonalBest(score){
+  if(score <= personalBest()) return false;
+  try{ localStorage.setItem("ltv-best", String(Math.round(score))); }catch(e){}
+  return true;
+}
+
+function halfway(){
+  if(!S.running) return;
+  const road = $("#road");
+  road.querySelectorAll(".halfway").forEach(e => e.remove());
+
+  const best = personalBest();
+  const score = Math.round(S.score);
+  const acc = S.answered ? Math.round(S.correct / S.answered * 100) : 0;
+  const ahead = best > 0 && score > best;
+
+  const el = document.createElement("div");
+  el.className = "halfway";
+  el.innerHTML =
+    '<div class="halfway-card">' +
+      '<p class="eyebrow">' + LEGS[S.legIdx].name + ' &middot; halfway</p>' +
+      '<div class="halfway-score">' + score.toLocaleString() + '</div>' +
+      '<div class="halfway-grid">' +
+        '<span>Correct</span><b>' + S.correct + ' of ' + S.answered + '</b>' +
+        '<span>Accuracy</span><b>' + acc + '%</b>' +
+        '<span>Your record</span><b>' + (best ? best.toLocaleString() : "&mdash;") + '</b>' +
+      '</div>' +
+      (ahead ? '<p class="halfway-note ahead">Ahead of your record.</p>'
+             : best ? '<p class="halfway-note">' + (best - score).toLocaleString() + ' behind your record.</p>'
+                    : '<p class="halfway-note">Finish a run to set a record.</p>') +
+    '</div>';
+  road.appendChild(el);
+
+  S.paused = true;
+  Sound.gallop(false);
+  clearTimeout(S.halfTimer);
+  S.halfTimer = setTimeout(() => {
+    el.classList.add("going");
+    setTimeout(() => el.remove(), 500);
+    if(S.running){
+      S.paused = false;
+      S.lastTick = performance.now();
+      Sound.gallop(true);
+    }
+  }, 5000);
 }
 
 /* ============================================================
@@ -1933,6 +2091,7 @@ function startRun(){
 
 function startLeg(){
   const c = CHARIOTS[S.chariot];
+  clearTimeout(S.halfTimer);
   const pool = TERMS[LEGS[S.legIdx].key];
   S.queue = shuffle(pool).slice(0, Q_PER_LEG);
   S.qIdx = 0;
@@ -1981,7 +2140,7 @@ function buildTicks(){
 }
 
 function clearRoad(){
-  $$("#road .fruit, #road .burst, #road .seeds, #road .scroll-veil").forEach(e => e.remove());
+  $$("#road .fruit, #road .burst, #road .seeds, #road .scroll-veil, #road .halfway").forEach(e => e.remove());
 }
 
 /* The approach runs on the clock, not on your answers: about five per
@@ -1996,6 +2155,7 @@ function paintDolly(now){
     S.phase = 1;
     S.phaseStart = now;
     road.style.setProperty("--swap", "1");
+    halfway();   /* the view changes, and you get a beat to see where you stand */
   }
 
   const secs = Math.max(0, (now - S.phaseStart) / 1000);
@@ -2118,7 +2278,7 @@ function popFruit(el){
   S.time = Math.min(S.maxTime, S.time + secs);
   S.score += pts;
   S.fruitPopped++;
-  b.style.color = "var(--pom)";
+  b.style.color = "var(--emerald)";
   b.textContent = "+" + secs.toFixed(1) + "s  +" + pts;
   road.appendChild(b);
   setTimeout(()=>b.remove(), 760);
@@ -2404,6 +2564,7 @@ function settle(entry, right){
 function endLeg(finished){
   S.running = false;
   Sound.gallop(false);
+  clearTimeout(S.halfTimer);
   if(finished && S.marks.length && S.marks.every(m => m === "done")) S.perfectLegs++;
   S.paused = true;
   cancelAnimationFrame(S.raf);
@@ -2509,7 +2670,7 @@ function renderArrival(arrived){
 
     '<div class="grade">' +
       bar("What you knew","Firmitas",firmitas, S.correct + " of " + total + " scrolls answered correctly.") +
-      bar("How you travelled","Utilitas",utilitas, arrived ? "Arrived with " + Math.round(timeLeft) + "s in the clepsydra." : "Reached " + legsDone + " of " + LEGS.length + " legs.") +
+      bar("How you travelled","Utilitas",utilitas, arrived ? "Arrived with " + Math.round(timeLeft) + "s left on the water clock." : "Reached " + legsDone + " of " + LEGS.length + " legs.") +
       bar("How well you did it","Venustas",venustas, "Longest streak " + S.bestStreak + "; " + S.fruitPopped + " pomegranates split.") +
     '</div>' +
 
@@ -2521,7 +2682,7 @@ function renderArrival(arrived){
         '<span>Terms aced</span><b>' + S.aced.length + '</b>' +
         '<span>Terms to study</span><b>' + S.missed.length + '</b>' +
         (S.fastest ? '<span>Quickest recognition</span><b>' + S.fastest.toFixed(1) + 's</b>' : "") +
-        '<span>Wording</span><b>' + (S.register === "hard" ? "Exact" : "Plain") + '</b>' +
+        '<span>Wording</span><b>' + (S.register === "hard" ? "Expert" : "Beginner") + '</b>' +
       '</div>' +
     '</div>' +
 
@@ -2571,7 +2732,7 @@ const MEDALS = [
     note:"Eight correct in a row.",
     won:g => g.bestStreak >= 8 },
   { key:"tempore",  name:"Ex Tempore",      latin:"and time to spare",
-    note:"Arrived with more than half the clock still in the vessel.",
+    note:"Arrived with more than half the water clock still to run.",
     won:g => g.arrived && g.timeFrac > 0.5 },
   { key:"orchard",  name:"The Orchard",     latin:"for the sellers' loss",
     note:"Twenty-five pomegranates opened.",
@@ -2628,7 +2789,7 @@ function runCard(g){
     "VENUSTAS  " + bar(g.venustas) + " " + g.venustas,
     "",
     g.score.toLocaleString() + " in the " + g.chariot +
-      ", on " + (g.register === "hard" ? "exact" : "plain") + " wording.",
+      ", on " + (g.register === "hard" ? "expert" : "beginner") + " wording.",
     S.aced.length + " terms aced, " + S.missed.length + " to study" +
       (S.fastest ? ", quickest in " + S.fastest.toFixed(1) + "s" : "") + "."
   ];
@@ -2766,6 +2927,7 @@ $("#head-home").addEventListener("click",  () => goHome());
 function goHome(){
   S.running = false; S.paused = true;
   cancelAnimationFrame(S.raf);
+  clearTimeout(S.halfTimer);
   Sound.gallop(false);
   clearRoad();
   show("title");
@@ -2801,6 +2963,7 @@ $("#tut-skip").addEventListener("click", () => {
 $("#btn-quit").addEventListener("click", () => {
   S.running = false; S.paused = true;
   cancelAnimationFrame(S.raf);
+  clearTimeout(S.halfTimer);
   clearRoad();
   renderArrival(false);
 });
@@ -3081,6 +3244,17 @@ try{
 
 function paintMusic(){
   const list = $("#music-list");
+  const sel = $("#music-select");
+
+  if(sel){
+    const opts = MUSIC.map((m,i) => '<option value="' + i + '">' +
+      m.who + ' &mdash; ' + m.title.replace(/&mdash;.*$/,"").trim() +
+      (m.missing ? " (not added)" : "") + '</option>').join("") +
+      '<option value="-1">The lyre (no file)</option>';
+    if(sel.innerHTML !== opts) sel.innerHTML = opts;
+    sel.value = String(Sound.track);
+  }
+
   if(!list) return;
   const row = (i, title, who, when, note, missing) =>
     '<button class="music-row" type="button" data-i="' + i + '" aria-pressed="' +
@@ -3108,6 +3282,21 @@ function paintMusic(){
       }
       paintMusic();
     });
+  });
+}
+
+/* the compact picker in the settings menu — same choice, changeable
+   mid-run so a leg does not lock you into what you picked in the yard */
+const musicSelectEl = document.getElementById("music-select");
+if(musicSelectEl){
+  musicSelectEl.addEventListener("change", ev => {
+    const i = parseInt(ev.target.value, 10);
+    Sound.setTrack(i);
+    if(!Sound.on){
+      if(Sound.enable()) paintSound();
+      try{ localStorage.setItem("ltv-sound","1"); }catch(e){}
+    }
+    paintMusic();
   });
 }
 
